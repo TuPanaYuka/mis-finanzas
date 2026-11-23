@@ -85,7 +85,7 @@ h1,h2,h3,p{margin:0}
 
 /* shell */
 .app{display:flex;min-height:100vh}
-.sidebar{position:fixed;inset:0 auto 0 0;width:var(--sidebar);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:20px 14px 16px;z-index:40}
+.sidebar{position:fixed;inset:0 auto 0 0;width:var(--sidebar);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:20px 14px 16px;z-index:40;overflow-y:auto;overscroll-behavior:contain}
 .shell{flex:1;min-width:0;margin-left:var(--sidebar);display:flex;flex-direction:column;min-height:100vh}
 main{width:100%;max-width:1500px;margin:0 auto;padding:28px 32px 64px;flex:1}
 .sidebar-overlay{position:fixed;inset:0;background:rgba(7,12,16,.45);z-index:39;opacity:0;pointer-events:none;transition:opacity 200ms ease}
@@ -134,6 +134,8 @@ main{width:100%;max-width:1500px;margin:0 auto;padding:28px 32px 64px;flex:1}
 .side-btn:hover{background:var(--surface-2);color:var(--text)}
 .side-note{display:flex;align-items:center;gap:6px;padding:2px 10px;font-size:10.5px;color:var(--text-3)}
 .status-dot{width:6px;height:6px;border-radius:50%;background:var(--success);flex:none}
+.status-dot.warn{background:var(--warning)}
+.status-dot.err{background:var(--danger)}
 
 /* topbar */
 .topbar{position:sticky;top:0;z-index:30;background:var(--bg);border-bottom:1px solid var(--border);padding:15px 32px;display:flex;align-items:center;gap:14px}
@@ -534,6 +536,17 @@ table.data{width:100%;border-collapse:collapse;font-size:11.5px;min-width:560px}
 .segmented button:hover{color:var(--text)}
 .segmented button.active{background:var(--surface);color:var(--text);box-shadow:var(--shadow-xs)}
 .settings-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+/* multi-device sync */
+.sync-card{grid-column:1/-1}
+.sync-card .form-field{margin-top:10px}
+.sync-code{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;padding:11px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface-2);font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:13px;font-weight:750;letter-spacing:.09em;word-break:break-all;text-align:center}
+.sync-code-big{padding:16px 12px;font-size:18px;letter-spacing:.12em}
+.sync-alert{margin-top:10px;padding:9px 11px;border-radius:9px;background:var(--warning-soft);color:var(--warning);font-size:10.5px;line-height:1.45}
+.sync-alert.err{background:var(--danger-soft);color:var(--danger)}
+.sync-help{display:flex;flex-direction:column;gap:10px;font-size:11.5px;line-height:1.55;color:var(--text-2)}
+.sync-help ol{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:7px}
+.sync-help code{font-family:ui-monospace,Consolas,monospace;font-size:10.5px;background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:1px 4px}
+.sync-sql{max-height:250px;overflow:auto;margin:0;padding:11px;border:1px solid var(--border);border-radius:9px;background:var(--surface-2);font-family:ui-monospace,Consolas,monospace;font-size:10px;line-height:1.55;white-space:pre;color:var(--text-2)}
 .profile-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--border)}
 .profile-row:first-child{border-top:0}
 .profile-row .avatar{width:32px;height:32px;border-radius:9px}
@@ -991,7 +1004,7 @@ h1,h2,h3,.brand-name,.page-title,.section-title,.card-title,.modal-title,.note-t
       <button class="side-btn" onclick="go('ajustes')">
         <span id="sideSettingsIcon"></span><span>Respaldo y ajustes</span>
       </button>
-      <div class="side-note"><span class="status-dot"></span><span>Datos guardados en este navegador</span></div>
+      <div class="side-note" id="syncNote"><span class="status-dot"></span><span id="syncNoteText">Datos guardados en este navegador</span></div>
     </div>
   </aside>
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
@@ -1159,7 +1172,10 @@ var ICONS={
   crown:'<path d="M2 20h20M4 20 2 7l6 4 4-7 4 7 6-4-2 13"/>',
   rocket:'<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>',
   shapes:'<path d="M8.3 10a.7.7 0 0 1-.6-1.1L11.4 3a.7.7 0 0 1 1.2 0l3.7 5.9a.7.7 0 0 1-.6 1.1Z"/><rect x="3" y="14" width="7" height="7" rx="1"/><circle cx="17.5" cy="17.5" r="3.5"/>',
-  cloud:'<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>'
+  cloud:'<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>',
+  link:'<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
+  help:'<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>',
+  refresh:'<path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/>'
 };
 function ic(name,size){var s=size||18;return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(ICONS[name]||ICONS.info)+'</svg>';}
 function $(id){return document.getElementById(id);}
@@ -1286,7 +1302,7 @@ var state={tab:'resumen',cur:todayISO().slice(0,7),filters:{ingresos:{q:'',cat:'
 function resetTxFilters(){state.filters={ingresos:{q:'',cat:'all',sort:'date'},gastos:{q:'',cat:'all',sort:'date'},ahorros:{q:'',cat:'all',sort:'date'},inversiones:{q:'',cat:'all',sort:'date'}};}
 var R=loadData(),S=null,activeDialog=null,toastTimer=null,pendingImport=null;
 function pick(){if(!R.profs.length)R.profs=[mkProfile('Personal',false)];S=R.profs.find(function(p){return p.id===R.act;})||R.profs[0];R.act=S.id;if(!S.shared)S.shared=[];if(!S.transfers)S.transfers=[];if(!S.catSort)S.catSort='amount';state.catSort=S.catSort;state.chartSlide=0;if(state.sharedSel&&!S.shared.some(function(a){return a.id===state.sharedSel;}))state.sharedSel=null;if(!state.sharedSel&&S.shared.length)state.sharedSel=S.shared[0].id;}
-function save(){try{R.act=S.id;localStorage.setItem(KEY,JSON.stringify({v:2,act:R.act,profs:R.profs}));return true;}catch(e){toast('No se pudo guardar. Revisá el espacio del navegador.','error');return false;}}
+function save(){try{R.act=S.id;localStorage.setItem(KEY,JSON.stringify({v:2,act:R.act,profs:R.profs}));if(typeof syncOnLocalSave==='function')syncOnLocalSave();return true;}catch(e){toast('No se pudo guardar. Revisá el espacio del navegador.','error');return false;}}
 pick();
 function getThemePref(){try{return localStorage.getItem(THEME_KEY)||'dark';}catch(e){return 'dark';}}
 function resolvedTheme(pref){if(pref==='auto')return window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';return pref==='dark'?'dark':'light';}
@@ -2023,11 +2039,11 @@ function vAnalisis(){
   var hint=diff===0?'Tus cuentas coinciden con la proyección.':(noAccList.length?'La diferencia se explica por '+noAccList.length+' movimiento'+(noAccList.length===1?'':'s')+' sin cuenta y/o ajustes manuales de saldo.':'La diferencia viene de ajustes manuales de saldo o del dinero inicial.');
   return '<div class="grid kpis kpis-5 section">'+kpiRaw('Ingresos totales',esc(fmt(all.ingreso)),'<span>histórico del espacio</span>','in','income')+kpiRaw('Gastos totales',esc(fmt(all.gasto)),'<span>histórico del espacio</span>','ga','expense')+kpiRaw('Ahorro total',esc(fmt(all.ahorro)),'<span>histórico del espacio</span>','ah','savings')+kpiRaw('Inversión total',esc(fmt(all.inversion)),'<span>histórico del espacio</span>','iv','investment')+kpiRaw('Balance histórico',esc(fmt(all.ingreso-all.gasto-all.ahorro-all.inversion)),'<span>ingresos − gastos − ahorro − inversión</span>',(all.ingreso-all.gasto-all.ahorro-all.inversion)<0?'ga':'in','chart',(all.ingreso-all.gasto-all.ahorro-all.inversion)<0?'ga':'')+'</div><div class="grid two section"><div class="card card-pad"><div class="card-head"><div><h2 class="card-title">Dinero inicial</h2><div class="card-desc">Tu punto de partida para comparar el avance.</div></div><span class="kpi-icon wa">'+ic('wallet',16)+'</span></div><div class="base-editor"><span class="currency-prefix">US$</span><input id="baseInput" inputmode="decimal" value="'+S.base+'" aria-label="Dinero inicial"><button class="btn primary sm" onclick="saveBase()">Guardar</button></div><div class="form-hint" style="margin-top:8px">El balance proyectado se calcula como dinero inicial + ingresos − gastos − ahorro − inversión.</div></div><div class="card card-pad"><div class="card-head"><div><h2 class="card-title">Conciliación</h2><div class="card-desc">Comparación entre lo proyectado y tus cuentas.</div></div><span class="kpi-icon in">'+ic('check',16)+'</span></div><div class="reconcile-row"><span class="n">Te debería quedar</span><b>'+esc(fmt(projected))+'</b></div><div class="reconcile-row"><span class="n">Tenés en cuentas</span><b>'+esc(fmt(accounts))+'</b></div><div class="reconcile-row"><span class="n">Diferencia</span><b class="'+(diff<0?'neg':'pos')+'">'+esc(fmt(diff))+'</b></div><div class="form-hint" style="margin-top:10px">'+esc(hint)+'</div>'+detail+'</div></div>'+analisisMesCard(rows,months)+'<div class="grid kpis section">'+kpiRaw('Tasa de ahorro histórica',pct(rate),'<span>sobre todos tus ingresos</span>','ah','savings')+kpiRaw('Categoría con más gasto',topExpense?esc(topExpense.cat.name):'—',topExpense?'<span>'+esc(fmt(topExpense.value))+' histórico</span>':'<span>Sin gastos todavía</span>','ga','tag',topExpense?'sm':'')+kpiRaw('Mes con más gasto',highest?esc(monthName(highest.ym,true)):'—',highest?'<span>'+esc(fmt(highest.value))+'</span>':'<span>Sin datos</span>','wa','calendar',highest?'sm':'')+kpiRaw('Gasto promedio mensual',esc(fmt(avgExpense)),'<span>en '+months.length+' mes'+(months.length===1?'':'es')+'</span>','ga','chart')+'</div>';
 }
-function vAjustes(){var pref=getThemePref();var themeOptions=[['dark','Oscuro','moon'],['light','Claro','sun'],['auto','Automático','monitor']];var profiles=R.profs.map(function(p){var t=sum(p.cue,function(x){return x.amt;});return '<div class="profile-row"><span class="avatar" style="background:'+colorFor(p.name)+'22;color:'+colorFor(p.name)+'">'+esc(initials(p.name))+'</span><div class="profile-info"><div class="profile-name">'+esc(p.name)+(p.id===S.id?'<span class="badge in">Activo</span>':'')+'</div><div class="profile-meta">'+p.tx.length+' movimientos · '+esc(fmt(t))+' en cuentas · '+p.shared.length+' compartida'+(p.shared.length===1?'':'s')+' · '+(p.transfers?p.transfers.length:0)+' transferencia'+((p.transfers?p.transfers.length:0)===1?'':'s')+'</div></div><div class="profile-actions"><button class="icon-btn" onclick="switchProfile(\''+p.id+'\')" aria-label="Abrir espacio" title="Abrir">'+ic('arrowRight',14)+'</button><button class="icon-btn" onclick="renameProfile(\''+p.id+'\')" aria-label="Renombrar espacio" title="Renombrar">'+ic('edit',14)+'</button>'+(R.profs.length>1?'<button class="icon-btn danger" onclick="deleteProfile(\''+p.id+'\')" aria-label="Eliminar espacio" title="Eliminar">'+ic('trash',14)+'</button>':'')+'</div></div>';}).join('');return '<div class="settings-grid section"><div class="card card-pad"><div class="card-head"><div><h2 class="card-title">Apariencia</h2><div class="card-desc">Elegí cómo se ve tu CRM financiero.</div></div><span class="kpi-icon">'+ic('sun',16)+'</span></div><div class="setting-row"><div><div class="setting-label">Tema</div><div class="setting-desc">Navy es el tema principal; el claro queda como opción.</div></div><div class="segmented">'+themeOptions.map(function(t){return '<button class="'+(pref===t[0]?'active':'')+'" onclick="setTheme(\''+t[0]+'\')">'+ic(t[2],12)+' '+t[1]+'</button>';}).join('')+'</div></div><div class="setting-row"><div><div class="setting-label">Moneda</div><div class="setting-desc">Todos los montos de la app.</div></div><span class="badge outline">USD · Dólar</span></div><div class="setting-row"><div><div class="setting-label">Formato</div><div class="setting-desc">Números y fechas en español de Argentina.</div></div><span class="badge outline">es-AR</span></div></div><div class="card card-pad"><div class="card-head"><div><h2 class="card-title">Respaldo de datos</h2><div class="card-desc">Tus datos viven solo en este navegador. Descargá una copia cada tanto.</div></div><span class="kpi-icon in">'+ic('shield',16)+'</span></div><div class="settings-actions"><button class="btn sm primary" onclick="exportData()">'+ic('download',14)+' Descargar copia</button><button class="btn sm" onclick="openImportModal()">'+ic('upload',14)+' Importar</button><button class="btn sm" onclick="copyData()">'+ic('copy',14)+' Copiar JSON</button></div><div class="setting-row" style="margin-top:12px"><div><div class="setting-label">Espacios guardados</div><div class="setting-desc">'+R.profs.length+' espacio'+(R.profs.length===1?'':'s')+' · '+S.tx.length+' movimientos en el activo.</div></div><span class="badge outline">'+R.profs.length+'</span></div></div></div><div class="card card-pad section"><div class="card-head"><div><h2 class="card-title">Espacios de trabajo</h2><div class="card-desc">Cada espacio tiene sus propios movimientos, cuentas, frascos y cuentas compartidas.</div></div><button class="btn primary sm" onclick="openProfileModal()">'+ic('plus',14)+' Nuevo espacio</button></div>'+profiles+'</div><div class="card card-pad section danger-zone"><div class="card-head"><div><h2 class="card-title">Zona de riesgo</h2><div class="card-desc">Esto borra todos los espacios y movimientos guardados en este navegador.</div></div></div><button class="btn danger sm" onclick="resetAll()">'+ic('trash',14)+' Borrar todos los datos</button></div><div class="card card-pad section"><div class="card-head"><div><h2 class="card-title">Acerca de</h2><div class="card-desc">Mis finanzas · CRM personal</div></div><span class="badge outline">v2</span></div><div class="form-hint">Organizá ingresos, gastos, ahorros e inversiones en un solo lugar. Llevá cuentas compartidas con el aporte de cada persona, transferí entre cuentas y revisá tu evolución con análisis claros. Todo se guarda localmente en tu navegador.</div></div>';}
+function vAjustes(){var pref=getThemePref();var themeOptions=[['dark','Oscuro','moon'],['light','Claro','sun'],['auto','Automático','monitor']];var profiles=R.profs.map(function(p){var t=sum(p.cue,function(x){return x.amt;});return '<div class="profile-row"><span class="avatar" style="background:'+colorFor(p.name)+'22;color:'+colorFor(p.name)+'">'+esc(initials(p.name))+'</span><div class="profile-info"><div class="profile-name">'+esc(p.name)+(p.id===S.id?'<span class="badge in">Activo</span>':'')+'</div><div class="profile-meta">'+p.tx.length+' movimientos · '+esc(fmt(t))+' en cuentas · '+p.shared.length+' compartida'+(p.shared.length===1?'':'s')+' · '+(p.transfers?p.transfers.length:0)+' transferencia'+((p.transfers?p.transfers.length:0)===1?'':'s')+'</div></div><div class="profile-actions"><button class="icon-btn" onclick="switchProfile(\''+p.id+'\')" aria-label="Abrir espacio" title="Abrir">'+ic('arrowRight',14)+'</button><button class="icon-btn" onclick="renameProfile(\''+p.id+'\')" aria-label="Renombrar espacio" title="Renombrar">'+ic('edit',14)+'</button>'+(R.profs.length>1?'<button class="icon-btn danger" onclick="deleteProfile(\''+p.id+'\')" aria-label="Eliminar espacio" title="Eliminar">'+ic('trash',14)+'</button>':'')+'</div></div>';}).join('');return '<div class="settings-grid section"><div class="card card-pad"><div class="card-head"><div><h2 class="card-title">Apariencia</h2><div class="card-desc">Elegí cómo se ve tu CRM financiero.</div></div><span class="kpi-icon">'+ic('sun',16)+'</span></div><div class="setting-row"><div><div class="setting-label">Tema</div><div class="setting-desc">Navy es el tema principal; el claro queda como opción.</div></div><div class="segmented">'+themeOptions.map(function(t){return '<button class="'+(pref===t[0]?'active':'')+'" onclick="setTheme(\''+t[0]+'\')">'+ic(t[2],12)+' '+t[1]+'</button>';}).join('')+'</div></div><div class="setting-row"><div><div class="setting-label">Moneda</div><div class="setting-desc">Todos los montos de la app.</div></div><span class="badge outline">USD · Dólar</span></div><div class="setting-row"><div><div class="setting-label">Formato</div><div class="setting-desc">Números y fechas en español de Argentina.</div></div><span class="badge outline">es-AR</span></div></div><div class="card card-pad"><div class="card-head"><div><h2 class="card-title">Respaldo de datos</h2><div class="card-desc">Tus datos viven en este navegador. Si activás la sincronización, también queda una copia en tu Supabase. Descargá una copia cada tanto.</div></div><span class="kpi-icon in">'+ic('shield',16)+'</span></div><div class="settings-actions"><button class="btn sm primary" onclick="exportData()">'+ic('download',14)+' Descargar copia</button><button class="btn sm" onclick="openImportModal()">'+ic('upload',14)+' Importar</button><button class="btn sm" onclick="copyData()">'+ic('copy',14)+' Copiar JSON</button></div><div class="setting-row" style="margin-top:12px"><div><div class="setting-label">Espacios guardados</div><div class="setting-desc">'+R.profs.length+' espacio'+(R.profs.length===1?'':'s')+' · '+S.tx.length+' movimientos en el activo.</div></div><span class="badge outline">'+R.profs.length+'</span></div></div>'+syncSettingsCard()+'</div><div class="card card-pad section"><div class="card-head"><div><h2 class="card-title">Espacios de trabajo</h2><div class="card-desc">Cada espacio tiene sus propios movimientos, cuentas, frascos y cuentas compartidas.</div></div><button class="btn primary sm" onclick="openProfileModal()">'+ic('plus',14)+' Nuevo espacio</button></div>'+profiles+'</div><div class="card card-pad section danger-zone"><div class="card-head"><div><h2 class="card-title">Zona de riesgo</h2><div class="card-desc">Esto borra todos los espacios y movimientos guardados en este navegador.</div></div></div><button class="btn danger sm" onclick="resetAll()">'+ic('trash',14)+' Borrar todos los datos</button></div><div class="card card-pad section"><div class="card-head"><div><h2 class="card-title">Acerca de</h2><div class="card-desc">Mis finanzas · CRM personal</div></div><span class="badge outline">v2</span></div><div class="form-hint">Organizá ingresos, gastos, ahorros e inversiones en un solo lugar. Llevá cuentas compartidas con el aporte de cada persona, transferí entre cuentas y revisá tu evolución con análisis claros. Todo se guarda localmente en tu navegador.</div></div>';}
 
 function closeModal(dlg){dlg=dlg||activeDialog;if(!dlg)return;if(dlg.open)dlg.close();dlg.remove();if(activeDialog===dlg)activeDialog=null;if(!document.querySelector('dialog.modal[open]'))document.body.classList.remove('modal-open');}
 function showFormError(msg){var e=$('formError');if(e){e.textContent=msg;e.classList.add('show');e.scrollIntoView({block:'nearest'});}}
-function openModal(opts){closeModal();var dlg=document.createElement('dialog');dlg.className='modal';dlg.innerHTML='<div class="modal-head"><div><h2 class="modal-title">'+opts.title+'</h2>'+(opts.sub?'<p class="modal-sub">'+opts.sub+'</p>':'')+'</div><button type="button" class="icon-btn" onclick="closeModal()" aria-label="Cerrar">'+ic('x',15)+'</button></div><div class="modal-body">'+(opts.body||'')+'</div><div class="modal-foot">'+(opts.footer||[]).map(function(f,i){return '<button type="button" class="btn '+(f.cls||'')+'" data-foot="'+i+'">'+f.label+'</button>';}).join('')+'</div>';document.body.appendChild(dlg);activeDialog=dlg;document.body.classList.add('modal-open');dlg.showModal();dlg.querySelectorAll('[data-foot]').forEach(function(btn){var f=opts.footer[+btn.getAttribute('data-foot')];btn.addEventListener('click',function(){if(f&&f.onClick)f.onClick(dlg);else closeModal(dlg);});});dlg.addEventListener('click',function(e){if(e.target===dlg)closeModal(dlg);});dlg.addEventListener('cancel',function(e){e.preventDefault();closeModal(dlg);});dlg.addEventListener('keydown',function(e){if(e.key==='Enter'&&(e.target.tagName==='INPUT'||e.target.tagName==='SELECT')){var primary=dlg.querySelector('.modal-foot .btn.primary, .modal-foot .btn.danger');if(primary){e.preventDefault();primary.click();}}});dlg.addEventListener('input',function(){var err=dlg.querySelector('#formError');if(err)err.classList.remove('show');});dlg.addEventListener('change',function(){var err=dlg.querySelector('#formError');if(err)err.classList.remove('show');});if(opts.onMount)opts.onMount(dlg);setTimeout(function(){var f=dlg.querySelector('.modal-body input,.modal-body select,.modal-body textarea,.modal-foot .btn.primary');if(f)f.focus();},40);return dlg;}
+function openModal(opts){closeModal();var dlg=document.createElement('dialog');dlg.className='modal';dlg.innerHTML='<div class="modal-head"><div><h2 class="modal-title">'+opts.title+'</h2>'+(opts.sub?'<p class="modal-sub">'+opts.sub+'</p>':'')+'</div>'+(opts.closable===false?'':'<button type="button" class="icon-btn" onclick="closeModal()" aria-label="Cerrar">'+ic('x',15)+'</button>')+'</div><div class="modal-body">'+(opts.body||'')+'</div><div class="modal-foot">'+(opts.footer||[]).map(function(f,i){return '<button type="button" class="btn '+(f.cls||'')+'" data-foot="'+i+'">'+f.label+'</button>';}).join('')+'</div>';document.body.appendChild(dlg);activeDialog=dlg;document.body.classList.add('modal-open');dlg.showModal();dlg.querySelectorAll('[data-foot]').forEach(function(btn){var f=opts.footer[+btn.getAttribute('data-foot')];btn.addEventListener('click',function(){if(f&&f.onClick)f.onClick(dlg);else closeModal(dlg);});});dlg.addEventListener('click',function(e){if(e.target===dlg&&opts.closeOnBackdrop!==false)closeModal(dlg);});dlg.addEventListener('cancel',function(e){e.preventDefault();if(opts.closable!==false)closeModal(dlg);});dlg.addEventListener('keydown',function(e){if(e.key==='Enter'&&(e.target.tagName==='INPUT'||e.target.tagName==='SELECT')){var primary=dlg.querySelector('.modal-foot .btn.primary, .modal-foot .btn.danger');if(primary){e.preventDefault();primary.click();}}});dlg.addEventListener('input',function(){var err=dlg.querySelector('#formError');if(err)err.classList.remove('show');});dlg.addEventListener('change',function(){var err=dlg.querySelector('#formError');if(err)err.classList.remove('show');});if(opts.onMount)opts.onMount(dlg);setTimeout(function(){var f=dlg.querySelector('.modal-body input,.modal-body select,.modal-body textarea,.modal-foot .btn.primary');if(f)f.focus();},40);return dlg;}
 function confirmAction(title,text,label,onConfirm,danger,iconName){openModal({title:title,body:'<div class="confirm-box"><span class="confirm-icon '+(danger===false?'info':'')+'">'+ic(iconName||'alert',18)+'</span><div class="confirm-text">'+text+'</div></div>',footer:[{label:'Cancelar'},{label:label||'Confirmar',cls:danger===false?'primary':'danger',onClick:function(dlg){closeModal(dlg);onConfirm();}}]});}
 
 function catOptions(type,selected){var cats=topCats(type);if(!cats.length)return '<option value="">Sin categorías de este tipo</option>';return '<option value="">Seleccioná una categoría</option>'+cats.map(function(c){return '<option value="'+c.id+'"'+(String(c.id)===String(selected)?' selected':'')+'>'+esc(c.name)+'</option>';}).join('');}
@@ -2423,8 +2439,656 @@ function fallbackCopy(data){var ta=document.createElement('textarea');ta.value=d
 function resetAll(){confirmAction('Borrar todos los datos','Se van a borrar <b>todos los espacios</b>, movimientos, cuentas, frascos y cuentas compartidas guardadas en este navegador. No se puede deshacer.','Borrar todo',function(){try{localStorage.removeItem(KEY);}catch(e){}location.reload();},true,'trash');}
 
 function quickAdd(){switch(state.tab){case 'compartida':openMoveModal();break;case 'cuentas':openAccountModal();break;case 'categorias':openCatModal();break;case 'ajustes':break;case 'ingresos':openTxModal(null,'ingreso');break;case 'gastos':openTxModal(null,'gasto');break;case 'ahorros':openTxModal(null,'ahorro');break;case 'inversiones':openTxModal(null,'inversion');break;default:openTxModal();}}
+/* ================= Sincronización entre dispositivos (Supabase) ================= */
+var SYNC_CFG_KEY='finanzas_sync_v1';
+var SYNC_SQL=`-- Mis finanzas · sincronización entre dispositivos
+-- Pegá todo este script en Supabase → SQL Editor → Run.
+
+create extension if not exists pgcrypto;
+
+create table if not exists public.finance_spaces (
+  id uuid primary key default gen_random_uuid(),
+  code text not null unique,
+  data jsonb not null default '{}'::jsonb,
+  rev bigint not null default 0,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.finance_spaces enable row level security;
+
+create or replace function public.finance_create_space()
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_code text;
+  v_id uuid;
+begin
+  loop
+    v_code := upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 16));
+    exit when not exists (select 1 from public.finance_spaces where code = v_code);
+  end loop;
+  insert into public.finance_spaces(code) values (v_code) returning id into v_id;
+  return jsonb_build_object('id', v_id, 'code', v_code);
+end;
+$$;
+
+create or replace function public.finance_get_meta(p_code text)
+returns jsonb
+language sql
+security definer
+set search_path = public
+as $$
+  select jsonb_build_object('rev', rev, 'updated_at', updated_at)
+  from public.finance_spaces
+  where code = upper(replace(p_code, '-', ''));
+$$;
+
+create or replace function public.finance_get_space(p_code text)
+returns jsonb
+language sql
+security definer
+set search_path = public
+as $$
+  select jsonb_build_object('data', data, 'rev', rev, 'updated_at', updated_at)
+  from public.finance_spaces
+  where code = upper(replace(p_code, '-', ''));
+$$;
+
+create or replace function public.finance_save_space(p_code text, p_data jsonb, p_base_rev bigint)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_rev bigint;
+  v_code text;
+begin
+  v_code := upper(replace(p_code, '-', ''));
+  if not exists (select 1 from public.finance_spaces where code = v_code) then
+    raise exception 'Código inválido';
+  end if;
+  update public.finance_spaces
+  set data = p_data, rev = rev + 1, updated_at = now()
+  where code = v_code and rev = p_base_rev
+  returning rev into v_rev;
+  if v_rev is null then
+    return jsonb_build_object('conflict', true, 'rev', (select rev from public.finance_spaces where code = v_code));
+  end if;
+  return jsonb_build_object('conflict', false, 'rev', v_rev);
+end;
+$$;
+
+revoke all on table public.finance_spaces from anon, authenticated;
+revoke all on function public.finance_create_space() from public;
+revoke all on function public.finance_get_meta(text) from public;
+revoke all on function public.finance_get_space(text) from public;
+revoke all on function public.finance_save_space(text, jsonb, bigint) from public;
+grant execute on function public.finance_create_space() to anon, authenticated;
+grant execute on function public.finance_get_meta(text) to anon, authenticated;
+grant execute on function public.finance_get_space(text) to anon, authenticated;
+grant execute on function public.finance_save_space(text, jsonb, bigint) to anon, authenticated;
+
+notify pgrst, 'reload schema';`;
+
+var syncCfg={url:'',key:'',code:'',rev:0,hash:'',lastSync:0};
+var syncState={state:'off',message:'Solo en este navegador'};
+var syncTimer=null,syncBusy=false,syncApplying=false,syncPaused=false,syncDirty=false,syncPushTimer=null,syncConflictRemote=null,syncEventsBound=false;
+
+function syncLoadCfg(){
+  try{
+    var raw=localStorage.getItem(SYNC_CFG_KEY);
+    if(!raw)return;
+    var d=JSON.parse(raw)||{};
+    syncCfg={
+      url:String(d.url||'').replace(/\/+$/,''),
+      key:String(d.key||''),
+      code:syncNormalizeCode(d.code||''),
+      rev:Number(d.rev)||0,
+      hash:String(d.hash||''),
+      lastSync:Number(d.lastSync)||0
+    };
+  }catch(e){}
+}
+function saveSyncCfg(){
+  try{localStorage.setItem(SYNC_CFG_KEY,JSON.stringify(syncCfg));}catch(e){}
+}
+function syncNormalizeCode(v){return String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'');}
+function syncFormatCode(v){
+  var c=syncNormalizeCode(v);
+  return c.replace(/(.{4})/g,'$1-').replace(/-$/,'');
+}
+function syncHash(str){
+  var h=2166136261;
+  str=String(str||'');
+  for(var i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619);}
+  return (h>>>0).toString(36)+':'+str.length;
+}
+function syncStable(v){
+  if(v===undefined)return 'null';
+  if(v===null||typeof v!=='object')return JSON.stringify(v);
+  if(Array.isArray(v))return '['+v.map(syncStable).join(',')+']';
+  var keys=Object.keys(v).filter(function(k){return v[k]!==undefined;}).sort();
+  return '{'+keys.map(function(k){return JSON.stringify(k)+':'+syncStable(v[k]);}).join(',')+'}';
+}
+function syncPayload(){return syncStable({v:2,profs:normalizeRoot(R).profs});}
+function syncEndpoint(fn){return syncCfg.url.replace(/\/+$/,'')+'/rest/v1/rpc/'+fn;}
+function syncHeaders(){
+  return {'apikey':syncCfg.key,'Authorization':'Bearer '+syncCfg.key,'Content-Type':'application/json'};
+}
+async function syncRpc(fn,args){
+  var ctrl=typeof AbortController!=='undefined'?new AbortController():null;
+  var timer=ctrl?setTimeout(function(){ctrl.abort();},12000):null;
+  try{
+    var res=await fetch(syncEndpoint(fn),{
+      method:'POST',
+      headers:syncHeaders(),
+      body:JSON.stringify(args||{}),
+      signal:ctrl?ctrl.signal:undefined
+    });
+    var text=await res.text();
+    var data=null;
+    if(text){try{data=JSON.parse(text);}catch(e){data=text;}}
+    if(!res.ok){
+      var msg=(data&&data.message)||('Error '+res.status);
+      if(res.status===404)msg='No se encontró la función en Supabase. Ejecutá el SQL de configuración.';
+      if(res.status===401||res.status===403)msg='La clave de Supabase no es válida o no tiene permisos.';
+      throw new Error(msg);
+    }
+    return data;
+  }catch(e){
+    if(e&&e.name==='AbortError')throw new Error('Sin respuesta de Supabase. Revisá tu conexión.');
+    throw e;
+  }finally{
+    if(timer)clearTimeout(timer);
+  }
+}
+function syncSetStatus(state,message){
+  syncState={state:state,message:message||''};
+  syncRenderNote();
+  syncUpdateCard();
+}
+function syncRenderNote(){
+  var note=$('syncNote');if(!note)return;
+  var dot=note.querySelector('.status-dot'),txt=$('syncNoteText');
+  var st=syncState.state,label='Datos guardados en este navegador',cls='';
+  if(st==='ok')label='Sincronizado con la nube';
+  else if(st==='syncing'){label='Sincronizando cambios…';cls='warn';}
+  else if(st==='ready')label='Sincronización lista';
+  else if(st==='offline'){label='Sin conexión · cambios locales';cls='warn';}
+  else if(st==='error'){label='Error de sincronización';cls='err';}
+  else if(st==='conflict'){label='Cambios pendientes de resolver';cls='warn';}
+  if(dot)dot.className='status-dot '+cls;
+  if(txt)txt.textContent=label;
+}
+function syncBadgeInfo(){
+  var map={
+    ok:['badge in','Sincronizado'],
+    syncing:['badge ah','Sincronizando…'],
+    ready:['badge outline','Listo'],
+    off:['badge outline','Solo local'],
+    offline:['badge wa','Sin conexión'],
+    error:['badge ga','Error'],
+    conflict:['badge wa','Conflicto']
+  };
+  return map[syncState.state]||map.off;
+}
+function syncUpdateCard(){
+  var b=$('syncStatusBadge');
+  if(b){var info=syncBadgeInfo();b.className=info[0];b.textContent=info[1];}
+  var msg=$('syncStatusMsg');if(msg)msg.textContent=syncState.message||'';
+  var last=$('syncLastSync');
+  if(last)last.textContent=syncCfg.lastSync?('Última: '+new Date(syncCfg.lastSync).toLocaleString('es-AR')):'Todavía no sincronizaste.';
+  var rev=$('syncRevBadge');if(rev)rev.textContent='rev '+(syncCfg.rev||0);
+  var err=$('syncErrorBox');
+  if(err){
+    var showErr=syncState.state==='error'||syncState.state==='offline';
+    err.style.display=showErr?'':'none';
+    err.className='sync-alert'+(syncState.state==='error'?' err':'');
+    err.textContent=syncState.message||'';
+  }
+  var conflict=$('syncConflictBox');
+  if(conflict)conflict.style.display=syncConflictRemote?'':'none';
+}
+function syncSettingsCard(){
+  var configured=!!(syncCfg.url&&syncCfg.key);
+  var linked=!!syncCfg.code;
+  var info=syncBadgeInfo();
+  var head='<div class="card card-pad sync-card"><div class="card-head"><div><h2 class="card-title">Sincronización</h2><div class="card-desc">Las mismas finanzas en la PC y en el celular.</div></div><span class="kpi-icon">'+ic('cloud',16)+'</span></div>';
+  var status='<div class="setting-row"><div><div class="setting-label">Estado</div><div class="setting-desc" id="syncStatusMsg">'+esc(syncState.message||'')+'</div></div><span class="'+info[0]+'" id="syncStatusBadge">'+info[1]+'</span></div><div class="sync-alert err" id="syncErrorBox" style="display:none"></div><div class="sync-alert" id="syncConflictBox" style="display:none">Hay cambios de otro dispositivo sin resolver. <button type="button" class="link-btn" onclick="syncOpenConflict()">Resolver ahora</button></div>';
+  var body='';
+  if(!configured){
+    body+='<div class="form-hint">Creá un proyecto gratis en Supabase, ejecutá el SQL de configuración y pegá acá los dos datos. <button type="button" class="link-btn" onclick="syncHelpModal()">Ver instrucciones '+ic('arrowRight',11)+'</button></div>'+
+      '<label class="form-field"><span class="form-label">Project URL</span><input class="form-input" id="syncUrl" placeholder="https://tuproyecto.supabase.co" autocomplete="off" spellcheck="false" value="'+esc(syncCfg.url)+'"></label>'+
+      '<label class="form-field"><span class="form-label">Anon public key</span><input class="form-input" id="syncKey" placeholder="eyJhbGciOi… o sb_publishable_…" autocomplete="off" spellcheck="false" value="'+esc(syncCfg.key)+'"></label>'+
+      '<div class="settings-actions"><button class="btn sm primary" onclick="syncConnect()">'+ic('link',14)+' Conectar</button><button class="btn sm" onclick="syncHelpModal()">'+ic('help',14)+' Cómo configurar</button></div>';
+  }else if(!linked){
+    body+='<div class="setting-row"><div><div class="setting-label">Supabase</div><div class="setting-desc">'+esc(syncCfg.url.replace(/^https:\/\//,''))+'</div></div><span class="badge in">Conectado</span></div>'+
+      '<div class="settings-actions"><button class="btn sm primary" onclick="syncCreateSpace()">'+ic('plus',14)+' Crear espacio</button><button class="btn sm" onclick="syncJoinModal()">'+ic('link',14)+' Unirme con un código</button><button class="btn sm" onclick="syncClearCredentials()">'+ic('x',14)+' Cambiar credenciales</button><button class="btn sm" onclick="syncHelpModal()">'+ic('help',14)+' Ayuda</button></div>'+
+      '<div class="form-hint" style="margin-top:10px">Creá el espacio en el dispositivo que ya tiene tus datos. En el otro, usá “Unirme con un código”.</div>';
+  }else{
+    body+='<div class="setting-row"><div><div class="setting-label">Código del espacio</div><div class="setting-desc">Pasalo a tus otros dispositivos. Tratalo como una contraseña.</div></div><button class="btn sm" onclick="syncCopy(syncFormatCode(syncCfg.code),\'Código copiado\')">'+ic('copy',13)+' Copiar</button></div>'+
+      '<div class="sync-code">'+esc(syncFormatCode(syncCfg.code))+'</div>'+
+      '<div class="setting-row" style="margin-top:10px"><div><div class="setting-label">Última sincronización</div><div class="setting-desc" id="syncLastSync">'+(syncCfg.lastSync?('Última: '+new Date(syncCfg.lastSync).toLocaleString('es-AR')):'Todavía no sincronizaste.')+'</div></div><span class="badge outline" id="syncRevBadge">rev '+(syncCfg.rev||0)+'</span></div>'+
+      '<div class="settings-actions"><button class="btn sm primary" onclick="syncNow()">'+ic('refresh',14)+' Sincronizar ahora</button><button class="btn sm" onclick="syncJoinModal()">'+ic('link',14)+' Usar otro código</button><button class="btn sm" onclick="syncDisconnect()">'+ic('x',14)+' Desconectar</button><button class="btn sm" onclick="syncHelpModal()">'+ic('help',14)+' Ayuda</button></div>'+
+      '<div class="form-hint" style="margin-top:10px">Los cambios se envían solos. Si editás en dos dispositivos a la vez, la app te pide elegir qué versión conservar.</div>';
+  }
+  return head+status+body+'</div>';
+}
+function syncHelpModal(){
+  var body='<div class="sync-help">'+
+    '<div>La sincronización usa un proyecto gratuito de <b>Supabase</b>. Tus datos quedan en tu propio proyecto de Supabase.</div>'+
+    '<ol>'+
+    '<li>Creá una cuenta gratis en <a href="https://supabase.com" target="_blank" rel="noopener">supabase.com</a> y un proyecto nuevo.</li>'+
+    '<li>En el proyecto, abrí <b>SQL Editor</b>, pegá el script de abajo y tocá <b>Run</b>.</li>'+
+    '<li>Andá a <b>Project Settings → API Keys</b> y copiá la <b>Project URL</b> y la <b>anon public key</b> (o publishable key).</li>'+
+    '<li>Pegá esos dos datos en Ajustes → Sincronización y tocá <b>Conectar</b>.</li>'+
+    '<li>En el primer dispositivo, tocá <b>Crear espacio</b>. Te va a dar un código.</li>'+
+    '<li>En los otros dispositivos, abrí la misma URL, andá a Ajustes → Sincronización y tocá <b>Unirme con un código</b>.</li>'+
+    '</ol>'+
+    '<div><b>Importante:</b> el código del espacio es la única llave de tus datos. Guardalo en un lugar seguro y no lo compartas. Si lo perdés, podés recuperarlo desde el panel de Supabase.</div>'+
+    '<div><b>Plan gratis:</b> si el proyecto pasa una semana sin uso, Supabase lo pausa. Entrá a supabase.com y reactivalo para volver a sincronizar.</div>'+
+    '<div style="font-weight:700;margin-top:2px">SQL de configuración</div>'+
+    '<pre class="sync-sql">'+esc(SYNC_SQL)+'</pre>'+
+    '</div>';
+  openModal({
+    title:'Cómo activar la sincronización',
+    sub:'Se hace una sola vez. Después todo es automático.',
+    body:body,
+    footer:[
+      {label:'Cerrar'},
+      {label:'Copiar SQL',onClick:function(){syncCopy(SYNC_SQL,'SQL copiado');}},
+      {label:'Ya lo configuré',cls:'primary',onClick:function(dlg){closeModal(dlg);var u=$('syncUrl');if(u)u.focus();}}
+    ]
+  });
+}
+function syncCopyFallback(text){
+  var ta=document.createElement('textarea');
+  ta.value=String(text);
+  ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.select();
+  try{document.execCommand('copy');}catch(e){}
+  ta.remove();
+}
+function syncCopy(text,okMsg){
+  var done=function(){toast(okMsg||'Copiado','success');};
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(String(text)).then(done).catch(function(){syncCopyFallback(text);done();});
+  }else{syncCopyFallback(text);done();}
+}
+async function syncConnect(){
+  var urlEl=$('syncUrl'),keyEl=$('syncKey');
+  var url=urlEl?urlEl.value.trim():'';
+  var key=keyEl?keyEl.value.trim():'';
+  url=url.replace(/\/+$/,'');
+  if(!/^https:\/\/[a-z0-9.-]+$/i.test(url)&&!/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(url)){toast('Pegá la Project URL completa (https://…supabase.co)','error');return;}
+  if(key.length<20){toast('Pegá la anon public key completa','error');return;}
+  syncCfg.url=url;syncCfg.key=key;
+  syncSetStatus('syncing','Probando conexión…');
+  try{
+    await syncRpc('finance_get_meta',{p_code:'TEST'});
+    saveSyncCfg();
+    syncSetStatus('ready','Conectado. Creá un espacio o unite con un código.');
+    render();
+    toast('Supabase conectado','success');
+  }catch(e){
+    syncSetStatus('error',e.message||'No se pudo conectar');
+    render();
+    toast('No se pudo conectar. Revisá la URL, la clave y el SQL.','error');
+  }
+}
+async function syncCreateSpace(){
+  if(!syncCfg.url||!syncCfg.key){toast('Primero conectá Supabase','error');return;}
+  if(syncCfg.code&&!confirm('Ya estás en un espacio. ¿Crear uno nuevo con los datos de este dispositivo?'))return;
+  syncSetStatus('syncing','Creando espacio…');
+  try{
+    var res=await syncRpc('finance_create_space',{});
+    if(!res||!res.code)throw new Error('No se pudo crear el espacio.');
+    syncCfg.code=syncNormalizeCode(res.code);
+    syncCfg.rev=0;
+    syncCfg.hash='';
+    saveSyncCfg();
+    var ok=await syncPush(true);
+    if(!ok)throw new Error('El espacio se creó, pero no se pudieron subir los datos. Probá “Sincronizar ahora”.');
+    syncStartPolling();
+    render();
+    syncShowCodeModal(syncCfg.code,true);
+    toast('Espacio creado','success');
+  }catch(e){
+    syncSetStatus('error',e.message||'No se pudo crear el espacio');
+    render();
+    toast(e.message||'No se pudo crear el espacio','error');
+  }
+}
+function syncShowCodeModal(code,created){
+  var body='<div class="sync-help">'+
+    '<div>'+(created?'El espacio se creó con los datos de este dispositivo.':'Código del espacio:')+'</div>'+
+    '<div class="sync-code sync-code-big">'+esc(syncFormatCode(code))+'</div>'+
+    '<div>En cada dispositivo nuevo: abrí esta misma página, andá a <b>Ajustes → Sincronización</b> y elegí <b>Unirme con un código</b>. Pegá este código una sola vez.</div>'+
+    '<div><b>Guardalo.</b> Es la llave para recuperar tus datos en otro dispositivo.</div>'+
+    '</div>';
+  openModal({
+    title:'Tu código de sincronización',
+    sub:'Compartilo solo con tus propios dispositivos.',
+    body:body,
+    footer:[
+      {label:'Cerrar'},
+      {label:'Copiar código',cls:'primary',onClick:function(){syncCopy(syncFormatCode(code),'Código copiado');}}
+    ]
+  });
+}
+function syncJoinModal(){
+  if(!syncCfg.url||!syncCfg.key){toast('Primero conectá Supabase','error');return;}
+  var body='<label class="form-field"><span class="form-label">Código de sincronización</span><input class="form-input" id="syncJoinCode" placeholder="XXXX-XXXX-XXXX-XXXX" autocomplete="off" spellcheck="false" maxlength="24"></label>'+
+    '<div class="form-hint" style="margin-top:8px">Si el espacio ya tiene datos, los de este dispositivo se reemplazan. Si querés conservarlos, descargá una copia antes desde Respaldo de datos.</div>'+
+    '<div class="form-error" id="formError"></div>';
+  openModal({
+    title:'Unirme a un espacio',
+    sub:'Ingresá el código que te mostró el otro dispositivo.',
+    body:body,
+    footer:[{label:'Cancelar'},{label:'Unirme',cls:'primary',onClick:function(dlg){syncJoin(dlg);}}]
+  });
+}
+async function syncJoin(dlg){
+  var inp=dlg.querySelector('#syncJoinCode');
+  var code=syncNormalizeCode(inp?inp.value:'');
+  if(code.length!==16){showFormError('El código tiene 16 caracteres.');return;}
+  var btn=dlg.querySelector('.modal-foot .btn.primary');
+  if(btn){btn.disabled=true;btn.textContent='Uniendo…';}
+  var prev={code:syncCfg.code,rev:syncCfg.rev,hash:syncCfg.hash};
+  try{
+    var full=await syncRpc('finance_get_space',{p_code:code});
+    if(!full)throw new Error('Código inválido o espacio inexistente.');
+    var remoteData=full.data;
+    syncCfg.code=code;
+    syncCfg.rev=Number(full.rev)||0;
+    syncCfg.hash='';
+    if(remoteData&&Array.isArray(remoteData.profs)&&remoteData.profs.length){
+      if(!syncApplyRemote(remoteData,syncCfg.rev,{silent:true}))throw new Error('No se pudieron leer los datos del espacio.');
+    }else{
+      syncCfg.rev=0;
+      saveSyncCfg();
+      var ok=await syncPush(true);
+      if(!ok)throw new Error('El espacio está vacío y no se pudieron subir los datos de este dispositivo.');
+    }
+    closeModal(dlg);
+    syncStartPolling();
+    render();
+    toast('Espacio vinculado. Tus datos ya están sincronizados.','success');
+  }catch(e){
+    syncCfg.code=prev.code;syncCfg.rev=prev.rev;syncCfg.hash=prev.hash;
+    saveSyncCfg();
+    if(btn){btn.disabled=false;btn.textContent='Unirme';}
+    showFormError(e.message||'No se pudo unir al espacio.');
+  }
+}
+function syncDisconnect(){
+  openModal({
+    title:'Desconectar sincronización',
+    sub:'Los datos de este dispositivo quedan intactos.',
+    body:'<div class="sync-help"><div>Se deja de sincronizar este dispositivo. El espacio en la nube <b>no se borra</b>: podés volver a conectarte con el mismo código.</div><div>Si querés borrar también la copia en la nube, hacelo desde el panel de Supabase.</div></div>',
+    footer:[{label:'Cancelar'},{label:'Desconectar',cls:'danger',onClick:function(dlg){
+      syncCfg.code='';syncCfg.rev=0;syncCfg.hash='';syncCfg.lastSync=0;
+      saveSyncCfg();syncStopPolling();syncConflictRemote=null;syncDirty=false;syncPaused=false;
+      syncSetStatus('off','Sincronización desactivada en este dispositivo.');
+      closeModal(dlg);render();toast('Sincronización desactivada','success');
+    }}]
+  });
+}
+function syncClearCredentials(){
+  openModal({
+    title:'Cambiar credenciales',
+    sub:'Se quitan la URL y la clave de Supabase de este dispositivo.',
+    body:'<div class="sync-help"><div>El espacio en la nube no se borra. Para volver a conectarte, pegá de nuevo la URL y la clave.</div></div>',
+    footer:[{label:'Cancelar'},{label:'Quitar',cls:'danger',onClick:function(dlg){
+      syncCfg={url:'',key:'',code:'',rev:0,hash:'',lastSync:0};
+      saveSyncCfg();syncStopPolling();syncConflictRemote=null;syncDirty=false;syncPaused=false;
+      syncSetStatus('off','Solo en este navegador');
+      closeModal(dlg);render();toast('Credenciales eliminadas de este dispositivo','success');
+    }}]
+  });
+}
+function syncOnLocalSave(){
+  if(syncApplying)return;
+  if(!syncCfg.code)return;
+  if(syncHash(syncPayload())===syncCfg.hash)return;
+  syncDirty=true;
+  syncSetStatus('syncing','Cambios pendientes de enviar…');
+  if(syncPushTimer)clearTimeout(syncPushTimer);
+  syncPushTimer=setTimeout(function(){
+    syncPushTimer=null;
+    if(syncBusy){syncOnLocalSave();return;}
+    syncPush();
+  },700);
+}
+async function syncPush(force){
+  if(!syncCfg.code||syncApplying)return false;
+  if(syncBusy)return false;
+  if(!navigator.onLine){syncSetStatus('offline','Sin conexión. Los cambios se enviarán al reconectar.');return false;}
+  var payload=syncPayload();
+  var pushedHash=syncHash(payload);
+  if(!force&&pushedHash===syncCfg.hash){
+    syncDirty=false;
+    syncSetStatus('ok','Tus datos están al día.');
+    return true;
+  }
+  syncBusy=true;
+  var base=Number(syncCfg.rev)||0;
+  try{
+    var res=await syncRpc('finance_save_space',{p_code:syncCfg.code,p_data:JSON.parse(payload),p_base_rev:base});
+    if(!res)throw new Error('Respuesta vacía de Supabase.');
+    if(res.conflict){
+      var full=await syncRpc('finance_get_space',{p_code:syncCfg.code});
+      if(!full)throw new Error('El espacio ya no existe.');
+      if(syncHash(syncStable(full.data||{}))===pushedHash){
+        syncCfg.rev=Number(full.rev)||0;
+        syncCfg.hash=pushedHash;
+        syncCfg.lastSync=Date.now();
+        saveSyncCfg();syncDirty=false;
+        syncSetStatus('ok','Tus datos están al día.');
+        return true;
+      }
+      syncDirty=true;
+      syncPaused=true;
+      syncConflictRemote=full;
+      syncSetStatus('conflict','Hay cambios de otro dispositivo sin resolver.');
+      syncConflictModal(full);
+      return false;
+    }
+    syncCfg.rev=Number(res.rev)||0;
+    syncCfg.hash=pushedHash;
+    syncCfg.lastSync=Date.now();
+    syncDirty=syncHash(syncPayload())!==pushedHash;
+    saveSyncCfg();
+    syncSetStatus(syncDirty?'syncing':'ok',syncDirty?'Cambios pendientes de enviar…':'Tus datos están al día.');
+    return true;
+  }catch(e){
+    var msg=e.message||'No se pudo sincronizar.';
+    if(/Failed to fetch|NetworkError|Load failed/i.test(msg))msg='Sin conexión con Supabase. Los cambios se guardarán y se enviarán al reconectar.';
+    syncSetStatus(/SQL|clave|función|Código inválido/i.test(msg)?'error':'offline',msg);
+    return false;
+  }finally{
+    syncBusy=false;
+  }
+}
+function syncTxCount(data){
+  if(!data||!Array.isArray(data.profs))return 0;
+  return data.profs.reduce(function(n,p){return n+((p&&Array.isArray(p.tx))?p.tx.length:0);},0);
+}
+function syncConflictModal(full){
+  if(!full||!full.data)return;
+  syncConflictRemote=full;
+  var localCount=syncTxCount({profs:R.profs});
+  var remoteCount=syncTxCount(full.data);
+  var body='<div class="sync-help">'+
+    '<div>Este dispositivo y otro guardaron cambios casi al mismo tiempo. Para no perder movimientos, elegí qué versión conservar.</div>'+
+    '<div><b>Este dispositivo:</b> '+localCount+' movimiento'+(localCount===1?'':'s')+'<br><b>El otro dispositivo:</b> '+remoteCount+' movimiento'+(remoteCount===1?'':'s')+'</div>'+
+    '<div>Si conservás los de este dispositivo, se reemplaza la versión del otro. Si traés los del otro, se reemplaza la de este.</div>'+
+    '</div>';
+  openModal({
+    title:'Cambios en dos dispositivos',
+    sub:'Se detectaron dos versiones diferentes.',
+    body:body,
+    closable:false,
+    closeOnBackdrop:false,
+    footer:[
+      {label:'Conservar los de este dispositivo',cls:'primary',onClick:function(dlg){closeModal(dlg);syncForcePush(full.rev);}},
+      {label:'Traer los del otro dispositivo',onClick:function(dlg){closeModal(dlg);syncPaused=false;syncConflictRemote=null;syncApplyRemote(full.data,full.rev);}}
+    ]
+  });
+}
+function syncOpenConflict(){
+  if(syncConflictRemote)syncConflictModal(syncConflictRemote);
+}
+async function syncForcePush(rev){
+  syncCfg.rev=Number(rev)||0;
+  saveSyncCfg();
+  syncPaused=false;
+  syncConflictRemote=null;
+  var ok=await syncPush(true);
+  if(ok)toast('Se conservaron los cambios de este dispositivo','success');
+  render();
+}
+function syncApplyRemote(data,rev,opts){
+  opts=opts||{};
+  if(!data||!Array.isArray(data.profs)||!data.profs.length)return false;
+  syncApplying=true;
+  try{
+    var prevAct=S&&S.id?S.id:'';
+    R=normalizeRoot(data);
+    if(prevAct&&R.profs.some(function(p){return p.id===prevAct;}))R.act=prevAct;
+    try{localStorage.setItem(KEY,JSON.stringify({v:2,act:R.act,profs:R.profs}));}catch(e){}
+    pick();
+    render();
+  }catch(e){
+    syncApplying=false;
+    return false;
+  }
+  syncApplying=false;
+  syncCfg.rev=Number(rev)||0;
+  syncCfg.hash=syncHash(syncPayload());
+  syncCfg.lastSync=Date.now();
+  saveSyncCfg();
+  syncDirty=false;
+  syncPaused=false;
+  syncConflictRemote=null;
+  syncSetStatus('ok','Tus datos están al día.');
+  if(!opts.silent)toast('Datos actualizados desde otro dispositivo','success');
+  return true;
+}
+async function syncPoll(initial){
+  if(!syncCfg.code||syncBusy||syncPaused)return;
+  if(document.visibilityState==='hidden'&&!initial)return;
+  if(activeDialog&&!initial)return;
+  if(!navigator.onLine){syncSetStatus('offline','Sin conexión. Los cambios se enviarán al reconectar.');return;}
+  if(syncDirty&&!initial){syncPush();return;}
+  var pushNeeded=false;
+  syncBusy=true;
+  try{
+    var meta=await syncRpc('finance_get_meta',{p_code:syncCfg.code});
+    if(meta===null){
+      syncStopPolling();
+      syncSetStatus('error','El código del espacio no existe en Supabase.');
+      return;
+    }
+    var localPayload=syncPayload();
+    var localHash=syncHash(localPayload);
+    var dirty=localHash!==syncCfg.hash;
+    if(Number(meta.rev)>Number(syncCfg.rev)){
+      if(dirty){
+        var full=await syncRpc('finance_get_space',{p_code:syncCfg.code});
+        if(full){
+          if(syncHash(syncStable(full.data||{}))===localHash){
+            syncCfg.rev=Number(full.rev)||0;
+            syncCfg.hash=localHash;
+            syncCfg.lastSync=Date.now();
+            saveSyncCfg();syncDirty=false;
+            syncSetStatus('ok','Tus datos están al día.');
+          }else{
+            syncPaused=true;
+            syncConflictRemote=full;
+            syncSetStatus('conflict','Hay cambios de otro dispositivo sin resolver.');
+            syncConflictModal(full);
+          }
+        }
+      }else{
+        var full2=await syncRpc('finance_get_space',{p_code:syncCfg.code});
+        if(full2)syncApplyRemote(full2.data,full2.rev,{silent:!initial});
+      }
+    }else if(Number(meta.rev)===Number(syncCfg.rev)){
+      if(dirty)pushNeeded=true;
+      else syncSetStatus('ok','Tus datos están al día.');
+    }else{
+      pushNeeded=true;
+    }
+  }catch(e){
+    var msg=e.message||'Sin conexión';
+    syncSetStatus(/SQL|clave|función/i.test(msg)?'error':'offline',msg);
+  }finally{
+    syncBusy=false;
+  }
+  if(pushNeeded)syncPush();
+}
+function syncStartPolling(){
+  syncStopPolling();
+  if(!syncCfg.code)return;
+  syncBindEvents();
+  syncTimer=setInterval(function(){syncPoll(false);},5000);
+  syncPoll(true);
+}
+function syncStopPolling(){
+  if(syncTimer){clearInterval(syncTimer);syncTimer=null;}
+}
+function syncBindEvents(){
+  if(syncEventsBound)return;
+  syncEventsBound=true;
+  window.addEventListener('online',function(){syncSetStatus('syncing','Reconectando…');syncPoll(false);});
+  window.addEventListener('offline',function(){syncSetStatus('offline','Sin conexión. Los cambios se guardan localmente.');});
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')syncPoll(false);});
+  window.addEventListener('focus',function(){syncPoll(false);});
+  window.addEventListener('pagehide',syncFlush);
+}
+function syncFlush(){
+  if(!syncDirty||!syncCfg.code||!navigator.onLine)return;
+  try{
+    var payload=syncPayload();
+    fetch(syncEndpoint('finance_save_space'),{
+      method:'POST',
+      headers:syncHeaders(),
+      body:JSON.stringify({p_code:syncCfg.code,p_data:JSON.parse(payload),p_base_rev:Number(syncCfg.rev)||0}),
+      keepalive:true
+    });
+  }catch(e){}
+}
+async function syncNow(){
+  if(!syncCfg.code){toast('Primero creá o unite a un espacio','error');return;}
+  syncSetStatus('syncing','Sincronizando…');
+  var dirty=syncHash(syncPayload())!==syncCfg.hash;
+  if(dirty)await syncPush();
+  else await syncPoll(false);
+  if(syncState.state==='ok')toast('Todo sincronizado','success');
+}
+function syncInit(){
+  syncLoadCfg();
+  syncBindEvents();
+  syncRenderNote();
+  if(!syncCfg.url||!syncCfg.key){
+    syncSetStatus('off','Solo en este navegador');
+    return;
+  }
+  if(!syncCfg.code){
+    syncSetStatus('ready','Conectado a Supabase. Creá un espacio o unite con un código.');
+    return;
+  }
+  syncSetStatus('syncing','Conectando…');
+  syncStartPolling();
+}
+
 function bindGlobal(){document.addEventListener('click',function(e){var w=document.querySelector('.ws-wrap');if(w&&!w.contains(e.target))closeWsMenu();});document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeWsMenu();closeSidebar();}if((e.key==='n'||e.key==='N')&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&document.activeElement&&['INPUT','SELECT','TEXTAREA'].indexOf(document.activeElement.tagName)===-1&&!activeDialog)quickAdd();});window.addEventListener('resize',function(){if(window.innerWidth>900)closeSidebar();});if(window.matchMedia){var mq=window.matchMedia('(prefers-color-scheme: dark)');var onChange=function(){if(getThemePref()==='auto')applyTheme();};if(mq.addEventListener)mq.addEventListener('change',onChange);else if(mq.addListener)mq.addListener(onChange);}var si=$('sideSettingsIcon');if(si)si.innerHTML=ic('settings',16);var ii=$('sideImportIcon');if(ii)ii.innerHTML=ic('upload',16);}
-function init(){applyTheme();render();bindGlobal();}
+function init(){applyTheme();render();bindGlobal();syncInit();}
 init();
 
 </script>
