@@ -1995,7 +1995,7 @@ function analisisMesCard(rows,months){
   var mini='<div class="chart-mini-grid"><div><div class="chart-mini-title">Ingresos históricos</div><div class="chart-mini-sub">Reparto por categoría</div>'+donutChart(incItems,incTotal,{centerLabel:'Total'})+'</div><div><div class="chart-mini-title">Gastos históricos</div><div class="chart-mini-sub">Reparto por categoría</div>'+donutChart(expItems,expTotal,{centerLabel:'Total'})+'</div></div>';
   return head+'<div class="card-desc" style="margin-bottom:6px">Últimos '+last.length+' mes'+(last.length===1?'':'es')+'</div>'+barChart(last,{series:['ingreso','gasto','ahorro','inversion'],legend:true})+mini+'</div>';
 }
-function vAnalisis(){
+function reconData(){
   var all=allTotals(),accounts=totalAccounts();
   var projected=S.base+all.ingreso-all.gasto-all.ahorro-all.inversion;
   var diff=accounts-projected;
@@ -2007,6 +2007,119 @@ function vAnalisis(){
   });
   noAccList.sort(function(a,b){return b.t.date.localeCompare(a.t.date);});
   var baseGap=accounts-(S.base+withAcc);
+  return {all:all,accounts:accounts,projected:projected,diff:diff,withAcc:withAcc,withoutAcc:withoutAcc,noAccList:noAccList,baseGap:baseGap};
+}
+function reconReport(){
+  var rd=reconData();
+  var lines=[];
+  lines.push('Conciliación · Mis finanzas');
+  lines.push('Espacio: '+S.name);
+  lines.push('Fecha: '+new Date().toLocaleString('es-AR'));
+  lines.push('');
+  lines.push('Dinero inicial: '+fmt(S.base));
+  lines.push('Ingresos: '+fmt(rd.all.ingreso));
+  lines.push('Gastos: '+fmt(rd.all.gasto));
+  lines.push('Ahorro: '+fmt(rd.all.ahorro));
+  lines.push('Inversión: '+fmt(rd.all.inversion));
+  lines.push('Proyección: '+fmt(rd.projected));
+  lines.push('Cuentas: '+fmt(rd.accounts));
+  lines.push('Diferencia: '+fmt(rd.diff));
+  lines.push('');
+  lines.push('Cuentas:');
+  if(!S.cue.length)lines.push('- Sin cuentas cargadas');
+  S.cue.forEach(function(a){
+    var mov=S.tx.filter(function(t){return String(t.account)===String(a.id);});
+    var movSum=0;mov.forEach(function(t){movSum+=txAccountEffect(t);});
+    lines.push('- '+a.name+': saldo '+fmt(a.amt)+' · '+mov.length+' movimientos · parte manual '+fmt(a.amt-movSum));
+  });
+  lines.push('');
+  lines.push('Movimientos de '+fmt(Math.abs(rd.diff))+':');
+  var cand=Math.abs(rd.diff)>0.005?S.tx.filter(function(t){return Math.abs(Math.abs(txAccountEffect(t))-Math.abs(rd.diff))<0.005;}):[];
+  if(!cand.length)lines.push('- Ninguno');
+  cand.slice(0,50).forEach(function(t){
+    var c=catById(t.cat)||{name:'Sin categoría'};
+    lines.push('- '+t.date+' · '+(t.note||c.name)+' · '+fmt(t.amt)+' · '+(t.account?'con cuenta':'sin cuenta'));
+  });
+  lines.push('');
+  lines.push('Movimientos sin cuenta: '+rd.noAccList.length+' · neto '+fmt(rd.withoutAcc));
+  lines.push('Ajuste manual / saldo inicial: '+fmt(rd.baseGap));
+  return lines.join('\n');
+}
+function reconHelpModal(){
+  var rd=reconData();
+  var diff=rd.diff,tol=0.005;
+  var accounts=S.cue.map(function(a){
+    var mov=S.tx.filter(function(t){return String(t.account)===String(a.id);});
+    var movSum=0;mov.forEach(function(t){movSum+=txAccountEffect(t);});
+    return {a:a,count:mov.length,movSum:movSum,manual:a.amt-movSum};
+  });
+  var candidates=Math.abs(diff)>tol?S.tx.filter(function(t){return Math.abs(Math.abs(txAccountEffect(t))-Math.abs(diff))<tol;}).sort(function(a,b){return b.date.localeCompare(a.date);}):[];
+  var dupMap={};
+  candidates.forEach(function(t){
+    var key=[t.date,Number(t.amt).toFixed(2),t.cat,t.subcat,String(t.note||'').trim().toLowerCase()].join('|');
+    if(!dupMap[key])dupMap[key]=[];
+    dupMap[key].push(t);
+  });
+  var dups=Object.keys(dupMap).map(function(k){return dupMap[k];}).filter(function(g){return g.length>1;});
+  var recent=S.tx.slice().sort(function(a,b){return b.date.localeCompare(a.date);}).slice(0,10);
+  var above=diff>0;
+  var body='';
+  body+='<div class="form-hint" style="margin-top:0">La app no está perdiendo dinero: compara lo que tenés en cuentas con lo que dicen tus movimientos. La diferencia es el resultado de esa resta.</div>';
+  body+='<div class="recon-list">'+
+    '<div class="recon-item"><span>Dinero inicial</span><b>'+esc(fmt(S.base))+'</b></div>'+
+    '<div class="recon-item"><span>Ingresos − gastos − ahorro − inversión</span><b>'+esc(fmt(rd.all.ingreso-rd.all.gasto-rd.all.ahorro-rd.all.inversion))+'</b></div>'+
+    '<div class="recon-item"><span>Te debería quedar</span><b>'+esc(fmt(rd.projected))+'</b></div>'+
+    '<div class="recon-item"><span>Tenés en cuentas</span><b>'+esc(fmt(rd.accounts))+'</b></div>'+
+    '<div class="recon-item"><span>Diferencia</span><b class="'+(diff<0?'neg':'pos')+'">'+esc(fmt(diff))+'</b></div>'+
+  '</div>';
+  body+='<div class="detail-label">Cuentas</div>';
+  if(accounts.length){
+    body+='<div class="recon-list">'+accounts.map(function(r){
+      return '<div class="recon-item" style="align-items:flex-start"><div><div>'+esc(r.a.name)+'</div><div style="font-size:9.5px;color:var(--text-3)">'+r.count+' movimiento'+(r.count===1?'':'s')+' · parte no explicada por movimientos: '+esc(fmt(r.manual))+'</div></div><b>'+esc(fmt(r.a.amt))+'</b></div>';
+    }).join('')+'</div>';
+  }else{
+    body+='<div class="form-hint">No tenés cuentas cargadas. La diferencia se calcula contra el dinero inicial.</div>';
+  }
+  body+='<div class="detail-label">'+(above?'Tus cuentas están por encima':'Tus cuentas están por debajo')+'</div>';
+  body+='<div class="form-hint">'+(above?'Puede faltar un ingreso o estar duplicado un gasto.':'Puede faltar un gasto o estar duplicado un ingreso.')+' Buscá movimientos de '+esc(fmt(Math.abs(diff)))+'.</div>';
+  if(candidates.length){
+    body+='<div class="recon-list" style="max-height:190px;overflow:auto">'+candidates.slice(0,20).map(function(t){
+      var c=catById(t.cat)||{name:'Sin categoría'};
+      var e=txAccountEffect(t);
+      return '<div class="recon-item"><span>'+esc(dateLabel(t.date))+' · '+esc(t.note||c.name)+'</span><b class="'+(e<0?'neg':'pos')+'">'+(e<0?'−':'+')+esc(fmt(Math.abs(e)))+'</b><button class="icon-btn" style="width:23px;height:23px;border-radius:6px" onclick="openTxModal(\''+t.id+'\')" aria-label="Editar movimiento" title="Editar">'+ic('edit',12)+'</button></div>';
+    }).join('')+'</div>';
+    if(candidates.length>20)body+='<div class="form-hint">Hay '+candidates.length+' movimientos de ese monto; se muestran los 20 más recientes.</div>';
+  }else{
+    body+='<div class="form-hint">No hay movimientos de '+esc(fmt(Math.abs(diff)))+'. Entonces la diferencia viene de un saldo editado a mano o del dinero inicial.</div>';
+  }
+  if(dups.length){
+    body+='<div class="detail-label">Duplicados sospechosos</div>';
+    body+='<div class="recon-list">'+dups.map(function(g){
+      var t=g[0],c=catById(t.cat)||{name:'Sin categoría'};
+      return '<div class="recon-item"><span>'+esc(dateLabel(t.date))+' · '+esc(t.note||c.name)+'</span><b class="pos">'+g.length+'× '+esc(fmt(t.amt))+'</b></div>';
+    }).join('')+'</div>';
+  }
+  body+='<div class="detail-label">Últimos movimientos</div>';
+  body+='<div class="recon-list" style="max-height:190px;overflow:auto">'+recent.map(function(t){
+    var c=catById(t.cat)||{name:'Sin categoría'};
+    var e=txAccountEffect(t);
+    return '<div class="recon-item"><span>'+esc(dateLabel(t.date))+' · '+esc(t.note||c.name)+'</span><b class="'+(e<0?'neg':'pos')+'">'+(e<0?'−':'+')+esc(fmt(Math.abs(e)))+'</b><button class="icon-btn" style="width:23px;height:23px;border-radius:6px" onclick="openTxModal(\''+t.id+'\')" aria-label="Editar movimiento" title="Editar">'+ic('edit',12)+'</button></div>';
+  }).join('')+'</div>';
+  body+='<div class="form-hint" style="margin-top:4px">Si tus saldos no son los reales, corregí la cuenta en <b>Cuentas</b>. Si te falta un movimiento, registralo con <b>Nuevo movimiento</b>.</div>';
+  openModal({
+    title:'¿Dónde está la diferencia?',
+    sub:'Diagnóstico de conciliación',
+    body:body,
+    footer:[
+      {label:'Copiar diagnóstico',onClick:function(){syncCopy(reconReport(),'Diagnóstico copiado');}},
+      {label:'Cerrar',cls:'primary'}
+    ]
+  });
+}
+function vAnalisis(){
+  var rd=reconData();
+  var all=rd.all,accounts=rd.accounts,projected=rd.projected,diff=rd.diff;
+  var withoutAcc=rd.withoutAcc,noAccList=rd.noAccList,baseGap=rd.baseGap;
   var months=allMonths();
   var rows=[];
   var acc=0;
@@ -2036,8 +2149,10 @@ function vAnalisis(){
     }
     detail+='</div></details>';
   }
-  var hint=diff===0?'Tus cuentas coinciden con la proyección.':(noAccList.length?'La diferencia se explica por '+noAccList.length+' movimiento'+(noAccList.length===1?'':'s')+' sin cuenta y/o ajustes manuales de saldo.':'La diferencia viene de ajustes manuales de saldo o del dinero inicial.');
-  return '<div class="grid kpis kpis-5 section">'+kpiRaw('Ingresos totales',esc(fmt(all.ingreso)),'<span>histórico del espacio</span>','in','income')+kpiRaw('Gastos totales',esc(fmt(all.gasto)),'<span>histórico del espacio</span>','ga','expense')+kpiRaw('Ahorro total',esc(fmt(all.ahorro)),'<span>histórico del espacio</span>','ah','savings')+kpiRaw('Inversión total',esc(fmt(all.inversion)),'<span>histórico del espacio</span>','iv','investment')+kpiRaw('Balance histórico',esc(fmt(all.ingreso-all.gasto-all.ahorro-all.inversion)),'<span>ingresos − gastos − ahorro − inversión</span>',(all.ingreso-all.gasto-all.ahorro-all.inversion)<0?'ga':'in','chart',(all.ingreso-all.gasto-all.ahorro-all.inversion)<0?'ga':'')+'</div><div class="grid two section"><div class="card card-pad"><div class="card-head"><div><h2 class="card-title">Dinero inicial</h2><div class="card-desc">Tu punto de partida para comparar el avance.</div></div><span class="kpi-icon wa">'+ic('wallet',16)+'</span></div><div class="base-editor"><span class="currency-prefix">US$</span><input id="baseInput" inputmode="decimal" value="'+S.base+'" aria-label="Dinero inicial"><button class="btn primary sm" onclick="saveBase()">Guardar</button></div><div class="form-hint" style="margin-top:8px">El balance proyectado se calcula como dinero inicial + ingresos − gastos − ahorro − inversión.</div></div><div class="card card-pad"><div class="card-head"><div><h2 class="card-title">Conciliación</h2><div class="card-desc">Comparación entre lo proyectado y tus cuentas.</div></div><span class="kpi-icon in">'+ic('check',16)+'</span></div><div class="reconcile-row"><span class="n">Te debería quedar</span><b>'+esc(fmt(projected))+'</b></div><div class="reconcile-row"><span class="n">Tenés en cuentas</span><b>'+esc(fmt(accounts))+'</b></div><div class="reconcile-row"><span class="n">Diferencia</span><b class="'+(diff<0?'neg':'pos')+'">'+esc(fmt(diff))+'</b></div><div class="form-hint" style="margin-top:10px">'+esc(hint)+'</div>'+detail+'</div></div>'+analisisMesCard(rows,months)+'<div class="grid kpis section">'+kpiRaw('Tasa de ahorro histórica',pct(rate),'<span>sobre todos tus ingresos</span>','ah','savings')+kpiRaw('Categoría con más gasto',topExpense?esc(topExpense.cat.name):'—',topExpense?'<span>'+esc(fmt(topExpense.value))+' histórico</span>':'<span>Sin gastos todavía</span>','ga','tag',topExpense?'sm':'')+kpiRaw('Mes con más gasto',highest?esc(monthName(highest.ym,true)):'—',highest?'<span>'+esc(fmt(highest.value))+'</span>':'<span>Sin datos</span>','wa','calendar',highest?'sm':'')+kpiRaw('Gasto promedio mensual',esc(fmt(avgExpense)),'<span>en '+months.length+' mes'+(months.length===1?'':'es')+'</span>','ga','chart')+'</div>';
+  var hint;
+  if(Math.abs(diff)<0.005)hint='Tus cuentas coinciden con la proyección.';
+  else hint='Tus cuentas suman '+fmt(Math.abs(diff))+(diff>0?' más':' menos')+' que la proyección. Revisá las causas posibles.';
+  return '<div class="grid kpis kpis-5 section">'+kpiRaw('Ingresos totales',esc(fmt(all.ingreso)),'<span>histórico del espacio</span>','in','income')+kpiRaw('Gastos totales',esc(fmt(all.gasto)),'<span>histórico del espacio</span>','ga','expense')+kpiRaw('Ahorro total',esc(fmt(all.ahorro)),'<span>histórico del espacio</span>','ah','savings')+kpiRaw('Inversión total',esc(fmt(all.inversion)),'<span>histórico del espacio</span>','iv','investment')+kpiRaw('Balance histórico',esc(fmt(all.ingreso-all.gasto-all.ahorro-all.inversion)),'<span>ingresos − gastos − ahorro − inversión</span>',(all.ingreso-all.gasto-all.ahorro-all.inversion)<0?'ga':'in','chart',(all.ingreso-all.gasto-all.ahorro-all.inversion)<0?'ga':'')+'</div><div class="grid two section"><div class="card card-pad"><div class="card-head"><div><h2 class="card-title">Dinero inicial</h2><div class="card-desc">Tu punto de partida para comparar el avance.</div></div><span class="kpi-icon wa">'+ic('wallet',16)+'</span></div><div class="base-editor"><span class="currency-prefix">US$</span><input id="baseInput" inputmode="decimal" value="'+S.base+'" aria-label="Dinero inicial"><button class="btn primary sm" onclick="saveBase()">Guardar</button></div><div class="form-hint" style="margin-top:8px">El balance proyectado se calcula como dinero inicial + ingresos − gastos − ahorro − inversión.</div></div><div class="card card-pad"><div class="card-head"><div><h2 class="card-title">Conciliación</h2><div class="card-desc">Comparación entre lo proyectado y tus cuentas.</div></div><span class="kpi-icon in">'+ic('check',16)+'</span></div><div class="reconcile-row"><span class="n">Te debería quedar</span><b>'+esc(fmt(projected))+'</b></div><div class="reconcile-row"><span class="n">Tenés en cuentas</span><b>'+esc(fmt(accounts))+'</b></div><div class="reconcile-row"><span class="n">Diferencia</span><b class="'+(diff<0?'neg':'pos')+'">'+esc(fmt(diff))+'</b></div><div class="form-hint" style="margin-top:10px">'+esc(hint)+'</div><button type="button" class="link-btn" style="margin-top:6px" onclick="reconHelpModal()">'+ic('help',12)+' ¿Dónde está la diferencia?</button>'+detail+'</div></div>'+analisisMesCard(rows,months)+'<div class="grid kpis section">'+kpiRaw('Tasa de ahorro histórica',pct(rate),'<span>sobre todos tus ingresos</span>','ah','savings')+kpiRaw('Categoría con más gasto',topExpense?esc(topExpense.cat.name):'—',topExpense?'<span>'+esc(fmt(topExpense.value))+' histórico</span>':'<span>Sin gastos todavía</span>','ga','tag',topExpense?'sm':'')+kpiRaw('Mes con más gasto',highest?esc(monthName(highest.ym,true)):'—',highest?'<span>'+esc(fmt(highest.value))+'</span>':'<span>Sin datos</span>','wa','calendar',highest?'sm':'')+kpiRaw('Gasto promedio mensual',esc(fmt(avgExpense)),'<span>en '+months.length+' mes'+(months.length===1?'':'es')+'</span>','ga','chart')+'</div>';
 }
 function vAjustes(){var pref=getThemePref();var themeOptions=[['dark','Oscuro','moon'],['light','Claro','sun'],['auto','Automático','monitor']];var profiles=R.profs.map(function(p){var t=sum(p.cue,function(x){return x.amt;});return '<div class="profile-row"><span class="avatar" style="background:'+colorFor(p.name)+'22;color:'+colorFor(p.name)+'">'+esc(initials(p.name))+'</span><div class="profile-info"><div class="profile-name">'+esc(p.name)+(p.id===S.id?'<span class="badge in">Activo</span>':'')+'</div><div class="profile-meta">'+p.tx.length+' movimientos · '+esc(fmt(t))+' en cuentas · '+p.shared.length+' compartida'+(p.shared.length===1?'':'s')+' · '+(p.transfers?p.transfers.length:0)+' transferencia'+((p.transfers?p.transfers.length:0)===1?'':'s')+'</div></div><div class="profile-actions"><button class="icon-btn" onclick="switchProfile(\''+p.id+'\')" aria-label="Abrir espacio" title="Abrir">'+ic('arrowRight',14)+'</button><button class="icon-btn" onclick="renameProfile(\''+p.id+'\')" aria-label="Renombrar espacio" title="Renombrar">'+ic('edit',14)+'</button>'+(R.profs.length>1?'<button class="icon-btn danger" onclick="deleteProfile(\''+p.id+'\')" aria-label="Eliminar espacio" title="Eliminar">'+ic('trash',14)+'</button>':'')+'</div></div>';}).join('');return '<div class="settings-grid section"><div class="card card-pad"><div class="card-head"><div><h2 class="card-title">Apariencia</h2><div class="card-desc">Elegí cómo se ve tu CRM financiero.</div></div><span class="kpi-icon">'+ic('sun',16)+'</span></div><div class="setting-row"><div><div class="setting-label">Tema</div><div class="setting-desc">Navy es el tema principal; el claro queda como opción.</div></div><div class="segmented">'+themeOptions.map(function(t){return '<button class="'+(pref===t[0]?'active':'')+'" onclick="setTheme(\''+t[0]+'\')">'+ic(t[2],12)+' '+t[1]+'</button>';}).join('')+'</div></div><div class="setting-row"><div><div class="setting-label">Moneda</div><div class="setting-desc">Todos los montos de la app.</div></div><span class="badge outline">USD · Dólar</span></div><div class="setting-row"><div><div class="setting-label">Formato</div><div class="setting-desc">Números y fechas en español de Argentina.</div></div><span class="badge outline">es-AR</span></div></div><div class="card card-pad"><div class="card-head"><div><h2 class="card-title">Respaldo de datos</h2><div class="card-desc">Tus datos viven en este navegador. Si activás la sincronización, también queda una copia en tu Supabase. Descargá una copia cada tanto.</div></div><span class="kpi-icon in">'+ic('shield',16)+'</span></div><div class="settings-actions"><button class="btn sm primary" onclick="exportData()">'+ic('download',14)+' Descargar copia</button><button class="btn sm" onclick="openImportModal()">'+ic('upload',14)+' Importar</button><button class="btn sm" onclick="copyData()">'+ic('copy',14)+' Copiar JSON</button></div><div class="setting-row" style="margin-top:12px"><div><div class="setting-label">Espacios guardados</div><div class="setting-desc">'+R.profs.length+' espacio'+(R.profs.length===1?'':'s')+' · '+S.tx.length+' movimientos en el activo.</div></div><span class="badge outline">'+R.profs.length+'</span></div></div>'+syncSettingsCard()+'</div><div class="card card-pad section"><div class="card-head"><div><h2 class="card-title">Espacios de trabajo</h2><div class="card-desc">Cada espacio tiene sus propios movimientos, cuentas, frascos y cuentas compartidas.</div></div><button class="btn primary sm" onclick="openProfileModal()">'+ic('plus',14)+' Nuevo espacio</button></div>'+profiles+'</div><div class="card card-pad section danger-zone"><div class="card-head"><div><h2 class="card-title">Zona de riesgo</h2><div class="card-desc">Esto borra todos los espacios y movimientos guardados en este navegador.</div></div></div><button class="btn danger sm" onclick="resetAll()">'+ic('trash',14)+' Borrar todos los datos</button></div><div class="card card-pad section"><div class="card-head"><div><h2 class="card-title">Acerca de</h2><div class="card-desc">Mis finanzas · CRM personal</div></div><span class="badge outline">v2</span></div><div class="form-hint">Organizá ingresos, gastos, ahorros e inversiones en un solo lugar. Llevá cuentas compartidas con el aporte de cada persona, transferí entre cuentas y revisá tu evolución con análisis claros. Todo se guarda localmente en tu navegador.</div></div>';}
 
@@ -2198,7 +2313,24 @@ function saveMove(id,dlg){var a=selectedShared();if(!a)return;var pid=dlg.queryS
 function deleteMove(id){var a=selectedShared();if(!a)return;var m=a.moves.find(function(x){return x.id===id;});if(!m)return;var p=a.people.find(function(x){return x.id===m.personId;})||{name:'Persona'};confirmAction('Eliminar movimiento','¿Querés eliminar el '+(m.type==='aporte'?'aporte':'retiro')+' de <b>'+esc(p.name)+'</b> por <b>'+esc(fmt(m.amt))+'</b>?','Eliminar',function(){a.moves=a.moves.filter(function(x){return x.id!==id;});save();render();toast('Movimiento eliminado');},true,'trash');}
 
 function openAccountModal(id){var a=id?accountById(id):null;var type=a?a.type:'banco';var body='<label class="form-field"><span class="form-label">Nombre</span><input class="form-input" id="accName" placeholder="Ej: Banco, Mercado Pago, Binance…" value="'+esc(a?a.name:'')+'"></label><div class="form-row"><label class="form-field"><span class="form-label">Tipo</span><select class="form-select" id="accType">'+Object.keys(CUE_TYPES).map(function(k){return '<option value="'+k+'"'+(k===type?' selected':'')+'>'+CUE_TYPES[k].label+'</option>';}).join('')+'</select></label><label class="form-field"><span class="form-label">Saldo (USD)</span><input class="form-input" inputmode="decimal" id="accAmt" placeholder="0,00" value="'+(a?a.amt:'')+'"></label></div><div class="form-hint">El saldo se ajusta con los movimientos asociados. También podés editarlo a mano cuando quieras.</div><div class="form-error" id="formError"></div>';openModal({title:a?'Editar cuenta':'Nueva cuenta',sub:'Guardá tus saldos y billeteras.',body:body,footer:[{label:'Cancelar'},{label:a?'Guardar cambios':'Agregar cuenta',cls:'primary',onClick:function(dlg){var name=dlg.querySelector('#accName').value.trim();var amt=parseAmount(dlg.querySelector('#accAmt').value);var type=dlg.querySelector('#accType').value;if(!name){showFormError('Ponele un nombre a la cuenta.');return;}if(isNaN(amt)){showFormError('Ingresá un saldo válido.');return;}if(a){a.name=name;a.amt=amt;a.type=type;}else{S.cue.push({id:uid(),name:name,amt:amt,type:type});}save();closeModal(dlg);render();toast(a?'Cuenta actualizada':'Cuenta agregada','success');}}]});}
-function deleteAccount(id){var a=accountById(id);if(!a)return;var linked=S.tx.filter(function(t){return String(t.account)===String(id);}).length;var trs=(S.transfers||[]).filter(function(x){return String(x.from)===String(id)||String(x.to)===String(id);}).length;var extra=linked?' Los '+linked+' movimiento'+(linked===1?'':'s')+' asociado'+(linked===1?'':'s')+' quedarán sin cuenta.':'';if(trs)extra+=' Se eliminarán '+trs+' transferencia'+(trs===1?'':'s')+' que usan esta cuenta.';confirmAction('Eliminar cuenta','¿Querés eliminar <b>'+esc(a.name)+'</b> con saldo de <b>'+esc(fmt(a.amt))+'</b>?'+extra,'Eliminar',function(){S.tx.forEach(function(t){if(String(t.account)===String(id))t.account='';});S.transfers=(S.transfers||[]).filter(function(x){return String(x.from)!==String(id)&&String(x.to)!==String(id);});S.cue=S.cue.filter(function(x){return x.id!==id;});save();render();toast('Cuenta eliminada');},true,'trash');}
+function deleteAccount(id){
+  var a=accountById(id);if(!a)return;
+  var linked=S.tx.filter(function(t){return String(t.account)===String(id);}).length;
+  var trs=(S.transfers||[]).filter(function(x){return String(x.from)===String(id)||String(x.to)===String(id);});
+  var extra=linked?' Los '+linked+' movimiento'+(linked===1?'':'s')+' asociado'+(linked===1?'':'s')+' quedarán sin cuenta.':'';
+  if(trs.length)extra+=' Se eliminarán '+trs.length+' transferencia'+(trs.length===1?'':'s')+' y se revertirán en la otra cuenta.';
+  if(Math.abs(a.amt)>0.005)extra+=' Su saldo de <b>'+esc(fmt(a.amt))+'</b> dejará de contar en la conciliación.';
+  confirmAction('Eliminar cuenta','¿Querés eliminar <b>'+esc(a.name)+'</b> con saldo de <b>'+esc(fmt(a.amt))+'</b>?'+extra,'Eliminar',function(){
+    trs.forEach(function(x){
+      if(String(x.from)===String(id))adjustAccount(x.to,-x.amt);
+      else adjustAccount(x.from,x.amt);
+    });
+    S.tx.forEach(function(t){if(String(t.account)===String(id))t.account='';});
+    S.transfers=(S.transfers||[]).filter(function(x){return String(x.from)!==String(id)&&String(x.to)!==String(id);});
+    S.cue=S.cue.filter(function(x){return x.id!==id;});
+    save();render();toast('Cuenta eliminada');
+  },true,'trash');
+}
 function openJarModal(id){var j=id?S.fra.find(function(x){return x.id===id;}):null;var body='<label class="form-field"><span class="form-label">Nombre del frasco</span><input class="form-input" id="jarName" placeholder="Ej: Emergencias, Vacaciones, Alquiler…" value="'+esc(j?j.name:'')+'"></label><div class="form-row"><label class="form-field"><span class="form-label">Monto actual (USD)</span><input class="form-input" inputmode="decimal" id="jarAmt" placeholder="0,00" value="'+(j?j.amt:'')+'"></label><label class="form-field"><span class="form-label">Meta <span class="muted">(opcional)</span></span><input class="form-input" inputmode="decimal" id="jarTarget" placeholder="0,00" value="'+(j&&j.target?j.target:'')+'"></label></div><div class="form-hint">La meta es opcional. Si la cargás, vas a ver una barra de progreso.</div><div class="form-error" id="formError"></div>';openModal({title:j?'Editar frasco':'Nuevo frasco de ahorro',sub:'Separá tu ahorro por objetivos.',body:body,footer:[{label:'Cancelar'},{label:j?'Guardar cambios':'Crear frasco',cls:'primary',onClick:function(dlg){var name=dlg.querySelector('#jarName').value.trim();var amt=parseAmount(dlg.querySelector('#jarAmt').value);var target=parseAmount(dlg.querySelector('#jarTarget').value);if(!name){showFormError('Ponele un nombre al frasco.');return;}if(isNaN(amt)||amt<0){showFormError('Ingresá un monto válido.');return;}if(isNaN(target))target=0;if(target<0)target=0;if(j){j.name=name;j.amt=amt;j.target=target;}else{S.fra.push({id:uid(),name:name,amt:amt,target:target});}save();closeModal(dlg);render();toast(j?'Frasco actualizado':'Frasco creado','success');}}]});}
 function deleteJar(id){var j=S.fra.find(function(x){return x.id===id;});if(!j)return;confirmAction('Eliminar frasco','¿Querés eliminar <b>'+esc(j.name)+'</b> con <b>'+esc(fmt(j.amt))+'</b>?','Eliminar',function(){S.fra=S.fra.filter(function(x){return x.id!==id;});save();render();toast('Frasco eliminado');},true,'trash');}
 
