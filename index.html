@@ -377,6 +377,54 @@ main{width:100%;max-width:1500px;margin:0 auto;padding:28px 32px 64px;flex:1}
 .distribution-legend span{display:inline-flex;align-items:center;gap:5px}
 .distribution-legend i{width:7px;height:7px;border-radius:2px}
 
+/* debts */
+.debt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:11px}
+.debt-card{padding:15px;border:1px solid var(--border);border-radius:12px;background:var(--surface-2);transition:border-color 130ms ease,background 130ms ease;min-width:0}
+.debt-card:hover{border-color:var(--border-strong);background:var(--surface)}
+.debt-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.debt-icon{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;flex:none}
+.debt-actions{display:flex;gap:1px;opacity:0;transition:opacity 120ms ease}
+.debt-card:hover .debt-actions{opacity:1}
+.debt-actions .icon-btn{width:26px;height:26px;border-radius:6px}
+.debt-actions .icon-btn svg{width:13px;height:13px}
+.debt-name{font-size:13px;font-weight:700;margin-top:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.debt-type{font-size:10.5px;color:var(--text-3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.debt-amount{font-size:21px;font-weight:750;letter-spacing:-.04em;margin-top:9px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;color:var(--danger)}
+.debt-amount.paid{color:var(--success)}
+.debt-meta{display:flex;justify-content:space-between;gap:8px;font-size:10px;color:var(--text-3);margin-top:2px;font-variant-numeric:tabular-nums}
+.debt-progress-label{display:flex;justify-content:space-between;gap:8px;font-size:10px;color:var(--text-3);margin-top:4px;font-variant-numeric:tabular-nums}
+.debt-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;padding-top:9px;border-top:1px solid var(--border);font-size:10.5px;color:var(--text-3)}
+.debt-due{display:inline-flex;align-items:center;gap:4px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.debt-due.warn{color:var(--warning)}
+.debt-due.overdue{color:var(--danger);font-weight:650}
+.debt-due.paid{color:var(--success)}
+.debt-payment{white-space:nowrap;font-variant-numeric:tabular-nums}
+.debt-card-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:11px;flex-wrap:wrap}
+.debt-card-foot .btn{height:30px;padding:0 10px;font-size:11px}
+.debt-paid-badge{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:650;color:var(--success)}
+.debt-summary-progress{margin-top:14px}
+.debt-summary-rows{display:flex;flex-direction:column;gap:7px;margin-top:12px}
+.debt-summary-row{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11.5px;color:var(--text-2)}
+.debt-summary-row b{font-variant-numeric:tabular-nums;color:var(--text)}
+.debt-detail-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-bottom:12px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.debt-detail-label{font-size:9.5px;font-weight:750;letter-spacing:.07em;text-transform:uppercase;color:var(--text-3)}
+.debt-detail-sub{font-size:11.5px;color:var(--text-3);margin-top:3px}
+.debt-detail-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:650;padding:3px 7px;border-radius:999px;background:var(--surface-2);color:var(--text-2);white-space:nowrap}
+.debt-detail-badge.warn{background:var(--warning-soft);color:var(--warning)}
+.debt-detail-badge.overdue{background:var(--danger-soft);color:var(--danger)}
+.debt-detail-badge.paid{background:var(--success-soft);color:var(--success)}
+.debt-detail-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px}
+.debt-detail-stats>div{display:flex;flex-direction:column;gap:1px;padding:8px 9px;border-radius:8px;background:var(--surface-2);min-width:0}
+.debt-detail-stats span{font-size:9.5px;color:var(--text-3)}
+.debt-detail-stats b{font-size:12px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.debt-note{margin-top:10px;padding:9px 10px;border-radius:8px;background:var(--surface-2);font-size:11px;color:var(--text-2);line-height:1.5}
+.debt-payment-row{display:flex;align-items:center;gap:9px;padding:8px 0;border-top:1px solid var(--border)}
+.debt-payment-row:first-child{border-top:0}
+.debt-payment-icon{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:var(--success-soft);color:var(--success);flex:none}
+.debt-payment-info{min-width:0;flex:1}
+.debt-payment-amt{font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
+.debt-payment-meta{font-size:10px;color:var(--text-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
 /* jars */
 .jars-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:11px}
 .jar-card{padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--surface-2)}
@@ -683,7 +731,7 @@ textarea.form-input{height:auto;min-height:68px;padding:8px 10px;resize:vertical
   .topbar-actions{gap:5px}
   .topbar-actions .btn .btn-label{display:none}
   .topbar-actions .btn.primary{width:35px;padding:0}
-  .tx-actions,.cat-actions,.account-actions,.jar-actions,.person-actions,.note-actions{opacity:1}
+  .tx-actions,.cat-actions,.account-actions,.jar-actions,.person-actions,.note-actions,.debt-actions{opacity:1}
   .note-grid{grid-template-columns:minmax(0,1fr)}
   .shared-summary{position:static;min-width:0}
   .toast{bottom:calc(72px + env(safe-area-inset-bottom))}
@@ -731,6 +779,7 @@ textarea.form-input{height:auto;min-height:68px;padding:8px 10px;resize:vertical
   .cat-detail-body{padding-left:0}
   .subcat-list,.subcat-add{margin-left:34px}
   .subcat-breakdown-row{grid-template-columns:minmax(0,1fr) 48px auto}
+  .debt-detail-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media (max-width:430px){
   .kpis,.kpis-3{grid-template-columns:1fr 1fr}
@@ -1044,6 +1093,7 @@ var TIPO_PAGE={ingreso:'ingresos',gasto:'gastos',ahorro:'ahorros',inversion:'inv
 var TIPO_TONE={ingreso:'in',gasto:'ga',ahorro:'ah',inversion:'iv'};
 var TIPO_ICON={ingreso:'income',gasto:'expense',ahorro:'savings',inversion:'investment'};
 var CUE_TYPES={banco:{label:'Banco',icon:'bank'},billetera:{label:'Billetera virtual',icon:'wallet'},efectivo:{label:'Efectivo',icon:'cash'},inversion:{label:'Inversión',icon:'investment'},otro:{label:'Otra',icon:'wallet'}};
+var DEBT_TYPES={tarjeta:{label:'Tarjeta de crédito',icon:'card'},prestamo:{label:'Préstamo',icon:'banknote'},hipoteca:{label:'Hipoteca',icon:'home'},auto:{label:'Crédito auto',icon:'car'},personal:{label:'Deuda personal',icon:'user'},otro:{label:'Otra deuda',icon:'receipt'}};
 var PALETTE=['#10b981','#3b82f6','#f59e0b','#ef4444','#8b5cf6','#ec4899','#14b8a6','#f97316','#6366f1','#84cc16'];
 var CAT_COLORS=['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899','#14b8a6','#f97316','#6366f1','#84cc16','#06b6d4','#a855f7'];
 var CAT_ICON_CHOICES=['utensils','cart','coffee','car','bus','fuel','home','bolt','droplet','wifi','phone','ticket','music','gamepad','film','heart','stethoscope','dumbbell','bag','shirt','scissors','sparkles','gift','cake','wine','plane','paw','baby','users','book','graduation','laptop','briefcase','piggy','investment','card','receipt','banknote','wallet','key','umbrella','wrench','leaf','palette','globe','star','crown','rocket','shapes','tag'];
@@ -1079,7 +1129,7 @@ var NOTE_COLORS={
 var MONTHS=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
 var NAV_GROUPS=[
   {label:'Principal',items:[['resumen','Resumen','dashboard'],['ingresos','Ingresos','income'],['gastos','Gastos','expense'],['ahorros','Ahorros','savings'],['inversiones','Inversión','investment']]},
-  {label:'Organización',items:[['compartida','Cuenta compartida','users'],['cuentas','Cuentas','wallet'],['categorias','Categorías','tag']]},
+  {label:'Organización',items:[['compartida','Cuenta compartida','users'],['cuentas','Cuentas','wallet'],['deudas','Deudas','debt'],['categorias','Categorías','tag']]},
   {label:'Análisis',items:[['analisis','Análisis','chart']]},
   {label:'Sistema',items:[['ajustes','Ajustes','settings']]}
 ];
@@ -1160,6 +1210,7 @@ var ICONS={
   briefcase:'<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
   piggy:'<path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2V5Z"/><path d="M2 9v1c0 1.1.9 2 2 2h1M16 11h.01"/>',
   card:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>',
+  debt:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M12 13v4"/><path d="m9 15 3 3 3-3"/>',
   receipt:'<path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M8 7h8M8 11h8M8 15h5"/>',
   banknote:'<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/>',
   key:'<circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6M15.5 7.5l3 3L22 7l-3-3"/>',
@@ -1217,7 +1268,7 @@ function deltaChip(value,prev,inverse){if(prev==null)return '';if(!prev)return v
 
 function defCats(){return [['Sueldo','ingreso'],['Freelance','ingreso'],['Otros ingresos','ingreso'],['Alimentación','gasto'],['Transporte','gasto'],['Vivienda','gasto'],['Servicios','gasto'],['Ocio','gasto'],['Salud','gasto'],['Otros gastos','gasto'],['Fondo de emergencia','ahorro'],['Ahorro general','ahorro'],['Inversión','inversion']].map(function(c,i){return {id:uid(),name:c[0],type:c[1],budget:0,parent:'',ord:i};});}
 function newSharedAccount(name){return {id:uid(),name:name||'Cuenta compartida',note:'',people:[],moves:[],concepts:[],ownersMigrated:true};}
-function mkProfile(name,withShared){var p={id:uid(),name:name||'Personal',base:0,cats:defCats(),tx:[],cue:[],fra:[],shared:[],transfers:[],catSort:'amount'};if(withShared)p.shared=[newSharedAccount('Cuenta compartida')];return p;}
+function mkProfile(name,withShared){var p={id:uid(),name:name||'Personal',base:0,cats:defCats(),tx:[],cue:[],fra:[],shared:[],transfers:[],debts:[],catSort:'amount'};if(withShared)p.shared=[newSharedAccount('Cuenta compartida')];return p;}
 function normCat(c){
   var ord=c&&c.ord!=null&&c.ord!==''?Number(c.ord):null;
   if(!isFinite(ord))ord=null;
@@ -1227,6 +1278,20 @@ function normTx(t){return {id:safeId(t&&t.id),date:normDate(t&&t.date),cat:Strin
 function inferCueType(name){var n=String(name||'').toLowerCase();if(/efectivo|cash|billetes?/.test(n))return 'efectivo';if(/inversi|binance|cripto|cedear|plazo fijo|fci|broker|acciones/.test(n))return 'inversion';if(/banco|santander|galicia|bbva|macro|naci[oó]n|provincia|hsbc|itau|ciudad|patagonia|supervielle|credicoop|cuenta/.test(n))return 'banco';if(/mercado ?pago|uala|brubank|naranja|personal pay|paypal|wise|virtual|billetera|prex|astropay|lemon|belo|modo/.test(n))return 'billetera';return 'otro';}
 function normCue(x){return {id:safeId(x&&x.id),name:String((x&&x.name)||'Cuenta'),amt:Number(x&&x.amt)||0,type:CUE_TYPES[x&&x.type]?x.type:inferCueType(x&&x.name)};}
 function normFra(x){return {id:safeId(x&&x.id),name:String((x&&x.name)||'Frasco'),amt:Number(x&&x.amt)||0,target:Math.max(0,Number(x&&x.target)||0)};}
+function normDebt(x){
+  x=x||{};
+  var used={};
+  var payments=(Array.isArray(x.payments)?x.payments:[]).map(function(p){
+    var prevDue=String((p&&p.prevDue)||'');
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(prevDue))prevDue='';
+    return {id:stableId(p&&p.id,'dp',used),date:normDate(p&&p.date),amt:Math.abs(Number(p&&p.amt)||0),note:String((p&&p.note)||'').slice(0,120),prevDue:prevDue};
+  }).filter(function(p){return p.amt>0;});
+  var balance=Math.max(0,Number(x.balance)||0);
+  var original=Math.max(balance,Number(x.original)||0);
+  var due=String(x.due||'');
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(due))due='';
+  return {id:safeId(x.id),name:String(x.name||'Deuda').slice(0,80),creditor:String(x.creditor||'').slice(0,80),type:DEBT_TYPES[x.type]?x.type:'otro',balance:balance,original:original,rate:clamp(Number(x.rate)||0,0,500),payment:Math.max(0,Number(x.payment)||0),due:due,note:String(x.note||'').slice(0,300),payments:payments};
+}
 function normShared(a){
   a=a||{};
   var rawPeople=Array.isArray(a.people)?a.people:[];
@@ -1293,15 +1358,18 @@ function normProfile(p){
   }).filter(function(t){return t.amt>0&&t.from&&t.to&&t.from!==t.to&&cue.some(function(a){return a.id===t.from;})&&cue.some(function(a){return a.id===t.to;});});
   var fra=(Array.isArray(p.fra)?p.fra:[]).map(normFra);
   var shared=(Array.isArray(p.shared)?p.shared:[]).map(normShared);
+  var rawDebts=Array.isArray(p.debts)?p.debts:[];
+  var debtUsed={};
+  var debts=rawDebts.map(function(x){var d=normDebt(x);d.id=stableId(x&&x.id,'d',debtUsed);return d;});
   var catSort=['amount','name','type','manual'].indexOf(p.catSort)>=0?p.catSort:'amount';
-  return {id:safeId(p.id),name:String(p.name||'Personal'),base:Number(p.base)||0,cats:cats,tx:tx,cue:cue,fra:fra,shared:shared,transfers:transfers,catSort:catSort};
+  return {id:safeId(p.id),name:String(p.name||'Personal'),base:Number(p.base)||0,cats:cats,tx:tx,cue:cue,fra:fra,shared:shared,transfers:transfers,debts:debts,catSort:catSort};
 }
 function normalizeRoot(d){var profs=[];if(d&&Array.isArray(d.profs)&&d.profs.length)profs=d.profs.map(normProfile);else if(d&&(Array.isArray(d.tx)||Array.isArray(d.cats)))profs=[normProfile(d)];if(!profs.length){var p=mkProfile('Personal',false);profs=[p];}var act=d&&d.act&&profs.some(function(p){return p.id===d.act;})?d.act:profs[0].id;return {v:2,act:act,profs:profs};}
 function loadData(){try{var raw=localStorage.getItem(KEY);if(raw){var d=JSON.parse(raw);if(d&&(Array.isArray(d.profs)||Array.isArray(d.tx)||Array.isArray(d.cats)))return normalizeRoot(d);}}catch(e){console.warn('No se pudo leer el guardado',e);}return normalizeRoot(null);}
-var state={tab:'resumen',cur:todayISO().slice(0,7),filters:{ingresos:{q:'',cat:'all',sort:'date'},gastos:{q:'',cat:'all',sort:'date'},ahorros:{q:'',cat:'all',sort:'date'},inversiones:{q:'',cat:'all',sort:'date'}},catTab:'todos',catPeriod:'month',catSort:'amount',chartSlide:0,analisisView:'chart',sharedSel:null,sharedFilter:'all'};
+var state={tab:'resumen',cur:todayISO().slice(0,7),filters:{ingresos:{q:'',cat:'all',sort:'date'},gastos:{q:'',cat:'all',sort:'date'},ahorros:{q:'',cat:'all',sort:'date'},inversiones:{q:'',cat:'all',sort:'date'}},catTab:'todos',catPeriod:'month',catSort:'amount',chartSlide:0,analisisView:'chart',sharedSel:null,sharedFilter:'all',debtFilter:'all',debtSort:'due'};
 function resetTxFilters(){state.filters={ingresos:{q:'',cat:'all',sort:'date'},gastos:{q:'',cat:'all',sort:'date'},ahorros:{q:'',cat:'all',sort:'date'},inversiones:{q:'',cat:'all',sort:'date'}};}
 var R=loadData(),S=null,activeDialog=null,toastTimer=null,pendingImport=null;
-function pick(){if(!R.profs.length)R.profs=[mkProfile('Personal',false)];S=R.profs.find(function(p){return p.id===R.act;})||R.profs[0];R.act=S.id;if(!S.shared)S.shared=[];if(!S.transfers)S.transfers=[];if(!S.catSort)S.catSort='amount';state.catSort=S.catSort;state.chartSlide=0;if(state.sharedSel&&!S.shared.some(function(a){return a.id===state.sharedSel;}))state.sharedSel=null;if(!state.sharedSel&&S.shared.length)state.sharedSel=S.shared[0].id;}
+function pick(){if(!R.profs.length)R.profs=[mkProfile('Personal',false)];S=R.profs.find(function(p){return p.id===R.act;})||R.profs[0];R.act=S.id;if(!S.shared)S.shared=[];if(!S.transfers)S.transfers=[];if(!S.debts)S.debts=[];if(!S.catSort)S.catSort='amount';state.catSort=S.catSort;state.chartSlide=0;if(state.sharedSel&&!S.shared.some(function(a){return a.id===state.sharedSel;}))state.sharedSel=null;if(!state.sharedSel&&S.shared.length)state.sharedSel=S.shared[0].id;}
 function save(){try{R.act=S.id;localStorage.setItem(KEY,JSON.stringify({v:2,act:R.act,profs:R.profs}));if(typeof syncOnLocalSave==='function')syncOnLocalSave();return true;}catch(e){toast('No se pudo guardar. Revisá el espacio del navegador.','error');return false;}}
 pick();
 function getThemePref(){try{return localStorage.getItem(THEME_KEY)||'dark';}catch(e){return 'dark';}}
@@ -1326,6 +1394,62 @@ function totalAccounts(){return sum(S.cue,function(x){return x.amt;});}
 function totalJars(){return sum(S.fra,function(x){return x.amt;});}
 function totalSavings(){return S.tx.reduce(function(a,t){var c=catById(t.cat);return a+(c&&c.type==='ahorro'?t.amt:0);},0);}
 function totalInvested(){return S.tx.reduce(function(a,t){var c=catById(t.cat);return a+(c&&c.type==='inversion'?t.amt:0);},0);}
+function debtById(id){var key=String(id==null?'':id);return (S.debts||[]).find(function(d){return String(d.id)===key;})||null;}
+function debtTypeLabel(type){return DEBT_TYPES[type]?DEBT_TYPES[type].label:'Otra deuda';}
+function debtTypeIcon(type){return DEBT_TYPES[type]?DEBT_TYPES[type].icon:'receipt';}
+function debtPaid(d){return Math.max(0,(Number(d&&d.original)||0)-(Number(d&&d.balance)||0));}
+function debtProgress(d){var o=Number(d&&d.original)||0;if(o<=0)return 0;return clamp((o-(Number(d&&d.balance)||0))/o*100,0,100);}
+function debtDueInfo(d){
+  if(!d||!d.due)return {label:'Sin vencimiento',cls:'',diff:null};
+  if(d.balance<=0.005)return {label:'Pagada',cls:'paid',diff:null};
+  var diff=Math.round((new Date(d.due+'T00:00:00')-new Date(todayISO()+'T00:00:00'))/86400000);
+  var label;
+  if(diff<0)label='Vencida hace '+Math.abs(diff)+' día'+(Math.abs(diff)===1?'':'s');
+  else if(diff===0)label='Vence hoy';
+  else if(diff===1)label='Vence mañana';
+  else if(diff<=7)label='Vence en '+diff+' días';
+  else label='Vence '+dateLabel(d.due);
+  return {label:label,cls:diff<0?'overdue':diff<=7?'warn':'',diff:diff};
+}
+function debtTotals(){
+  var list=S.debts||[];
+  var active=list.filter(function(d){return d.balance>0.005;});
+  var paid=list.filter(function(d){return d.balance<=0.005;});
+  var total=sum(active,function(d){return d.balance;});
+  var monthly=sum(active,function(d){return d.payment;});
+  var original=sum(list,function(d){return d.original;});
+  var paidAmt=sum(list,function(d){return debtPaid(d);});
+  var weighted=total>0?sum(active,function(d){return d.balance*(Number(d.rate)||0);})/total:0;
+  var next=active.filter(function(d){return !!d.due;}).sort(function(a,b){return a.due.localeCompare(b.due);})[0]||null;
+  return {list:list,active:active,paid:paid,total:total,monthly:monthly,original:original,paidAmt:paidAmt,rate:weighted,next:next};
+}
+function debtFilteredSorted(){
+  var filter=state.debtFilter||'all';
+  var list=(S.debts||[]).filter(function(d){
+    if(filter==='active')return d.balance>0.005;
+    if(filter==='paid')return d.balance<=0.005;
+    return true;
+  }).slice();
+  var mode=state.debtSort||'due';
+  list.sort(function(a,b){
+    if(mode==='name')return a.name.localeCompare(b.name);
+    if(mode==='balance')return b.balance-a.balance;
+    var aActive=a.balance>0.005,bActive=b.balance>0.005;
+    if(aActive!==bActive)return aActive?-1:1;
+    if(a.due&&b.due)return a.due.localeCompare(b.due);
+    if(a.due)return -1;
+    if(b.due)return 1;
+    return b.balance-a.balance;
+  });
+  return list;
+}
+function setDebtFilter(v){state.debtFilter=['all','active','paid'].indexOf(v)>=0?v:'all';render();}
+function setDebtSort(v){state.debtSort=['due','balance','name'].indexOf(v)>=0?v:'due';render();}
+function advanceDueDate(due){
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(String(due||'')))return '';
+  var p=due.split('-'),ym=addMonth(p[0]+'-'+p[1],1),day=Math.min(+p[2],daysInMonth(ym));
+  return ym+'-'+String(day).padStart(2,'0');
+}
 function series(n,endYm){var out=[];for(var i=n-1;i>=0;i--){var ym=addMonth(endYm,-i);var t=monthTotals(ym);out.push({ym:ym,ingreso:t.ingreso,gasto:t.gasto,ahorro:t.ahorro,inversion:t.inversion});}return out;}
 function allMonths(){var set={};S.tx.forEach(function(t){set[t.date.slice(0,7)]=1;});return Object.keys(set).sort();}
 function budgetSummary(ym){var rows=S.cats.filter(function(c){return !c.parent&&c.type==='gasto'&&c.budget>0;}).map(function(c){var spent=0;S.tx.forEach(function(t){if(t.cat===c.id&&t.date.slice(0,7)===ym)spent+=t.amt;});return {cat:c,spent:spent,budget:c.budget};});rows.sort(function(a,b){return (b.spent/b.budget)-(a.spent/a.budget);});var tb=sum(rows,function(x){return x.budget;}),ts=sum(rows,function(x){return x.spent;});return {rows:rows,totalBudget:tb,totalSpent:ts,remaining:tb-ts};}
@@ -1357,13 +1481,13 @@ function groupCats(items,n){var arr=items.slice();if(arr.length<=n)return arr;va
 function niceCeil(n){if(n<=0)return 1;var p=Math.pow(10,Math.floor(Math.log(n)/Math.LN10));var f=n/p;var nf=f<=1?1:f<=2?2:f<=5?5:10;return nf*p;}
 function barChart(data,opts){opts=opts||{};var seriesKeys=opts.series||['ingreso','gasto','ahorro','inversion'];var colors={ingreso:'var(--success)',gasto:'var(--danger)',ahorro:'var(--info)',inversion:'var(--invest)'};var narrow=window.innerWidth<=640;var W=narrow?400:700,H=opts.height||(narrow?200:240),L=narrow?38:46,Rt=8,T=14,B=narrow?24:28;var max=0;data.forEach(function(d){seriesKeys.forEach(function(k){max=Math.max(max,d[k]||0);});});max=niceCeil(max||1);var iw=W-L-Rt,ih=H-T-B,gw=iw/Math.max(data.length,1);var bw=Math.min(seriesKeys.length===1?26:13,Math.max(5,(gw-14)/seriesKeys.length));var gap=seriesKeys.length===1?0:4;var out='';for(var i=0;i<=4;i++){var y=T+ih*(1-i/4);out+='<line class="grid-line" x1="'+L+'" x2="'+(W-Rt)+'" y1="'+y+'" y2="'+y+'"/><text x="'+(L-7)+'" y="'+(y+3)+'" text-anchor="end">'+esc(axisShort(max*i/4))+'</text>';}data.forEach(function(d,j){var gx=L+j*gw;var totalW=seriesKeys.length*bw+(seriesKeys.length-1)*gap;seriesKeys.forEach(function(k,q){var v=d[k]||0;var bh=v/max*ih;var x=gx+gw/2-totalW/2+q*(bw+gap);out+='<rect class="bar" style="--i:'+j+'" x="'+x+'" y="'+(T+ih-bh)+'" width="'+bw+'" height="'+Math.max(bh,0)+'" rx="3" fill="'+colors[k]+'"><title>'+esc(monthName(d.ym,true))+' · '+TIPOS[k]+': '+esc(fmt(v))+'</title></rect>';});out+='<text x="'+(gx+gw/2)+'" y="'+(H-8)+'" text-anchor="middle">'+esc(monthShort(d.ym))+'</text>';});var legend=opts.legend===false?'':'<div class="chart-legend">'+seriesKeys.map(function(k){return '<span><i style="background:'+colors[k]+'"></i>'+TIPOS[k]+'</span>';}).join('')+'</div>';return '<div class="chart"><svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Gráfico mensual">'+out+'</svg></div>'+legend;}
 function donutChart(items,total,opts){opts=opts||{};items=dedupeItemColors(items.slice());var sumv=sum(items,function(x){return x.value;});if(!items.length||sumv<=0)return '<div class="empty" style="padding:24px 10px"><div class="empty-icon">'+ic('chart',21)+'</div><div class="empty-title">Sin datos todavía</div><div class="empty-text">Cuando registres movimientos vas a ver el reparto acá.</div></div>';var r=54,c=2*Math.PI*r,offset=0,segs='';items.forEach(function(it,idx){var frac=it.value/sumv;var len=frac*c;var target=-offset;segs+='<circle class="donut-seg" cx="80" cy="80" r="'+r+'" fill="none" stroke="'+it.color+'" stroke-width="16" stroke-dasharray="'+Math.max(0,len-2)+' '+Math.max(0,c-len+2)+'" stroke-dashoffset="'+target+'" style="--circ:'+c+';--target:'+target+';--i:'+idx+'" transform="rotate(-90 80 80)"><title>'+esc(it.label)+': '+esc(fmt(it.value))+' ('+pct(frac*100)+')</title></circle>';offset+=len;});var legend='<div class="legend">'+items.map(function(it){var inner='<span class="legend-dot" style="background:'+it.color+'"></span><span class="legend-name">'+esc(it.label)+'</span><span class="legend-val">'+esc(fmt0(it.value))+'</span>';if(it.catId&&catById(it.catId))return '<button type="button" class="legend-item legend-link" onclick="openCategoryDetail(\''+it.catId+'\')">'+inner+'</button>';return '<div class="legend-item">'+inner+'</div>';}).join('')+'</div>';return '<div class="donut-wrap"><div class="donut"><svg viewBox="0 0 160 160" role="img" aria-label="'+(opts.label||'Distribución')+'"><circle cx="80" cy="80" r="'+r+'" fill="none" stroke="var(--surface-3)" stroke-width="16"/>'+segs+'</svg><div class="donut-center"><span>'+(opts.centerLabel||'Total')+'</span><strong>'+esc(fmtShort(total!=null?total:sumv))+'</strong></div></div>'+legend+'</div>';}
-function pageMeta(){switch(state.tab){case 'ingresos':return {title:'Ingresos',sub:'Todo lo que entró en '+monthName(state.cur,true).toLowerCase(),month:true};case 'gastos':return {title:'Gastos',sub:'Todo lo que salió en '+monthName(state.cur,true).toLowerCase(),month:true};case 'ahorros':return {title:'Ahorros',sub:'Lo que separaste para tus metas',month:true};case 'inversiones':return {title:'Inversión',sub:'Tus aportes e inversiones de '+monthName(state.cur,true).toLowerCase(),month:true};case 'compartida':return {title:'Cuenta compartida',sub:'Aportes, retiros y la parte de cada persona',month:false};case 'cuentas':return {title:'Cuentas',sub:'Tus saldos y billeteras',month:false};case 'categorias':return {title:'Categorías',sub:'Organizá tus ingresos, gastos, ahorros e inversiones',month:false};case 'analisis':return {title:'Análisis',sub:'Tu evolución financiera completa',month:false};case 'ajustes':return {title:'Ajustes',sub:'Apariencia, espacios y respaldo',month:false};default:return {title:'Resumen',sub:'Tu panorama financiero de '+monthName(state.cur,true).toLowerCase(),month:true};}}
-function navBadge(id){if(id==='ingresos'||id==='gastos'||id==='ahorros'||id==='inversiones'){var type=id==='ingresos'?'ingreso':id==='gastos'?'gasto':id==='ahorros'?'ahorro':'inversion';var c=txOfType(type,state.cur).length;return c?String(c):'';}if(id==='compartida')return S.shared.length?String(S.shared.length):'';return '';}
+function pageMeta(){switch(state.tab){case 'ingresos':return {title:'Ingresos',sub:'Todo lo que entró en '+monthName(state.cur,true).toLowerCase(),month:true};case 'gastos':return {title:'Gastos',sub:'Todo lo que salió en '+monthName(state.cur,true).toLowerCase(),month:true};case 'ahorros':return {title:'Ahorros',sub:'Lo que separaste para tus metas',month:true};case 'inversiones':return {title:'Inversión',sub:'Tus aportes e inversiones de '+monthName(state.cur,true).toLowerCase(),month:true};case 'compartida':return {title:'Cuenta compartida',sub:'Aportes, retiros y la parte de cada persona',month:false};case 'cuentas':return {title:'Cuentas',sub:'Tus saldos y billeteras',month:false};case 'deudas':return {title:'Deudas',sub:'Tus compromisos, cuotas y próximos vencimientos',month:false};case 'categorias':return {title:'Categorías',sub:'Organizá tus ingresos, gastos, ahorros e inversiones',month:false};case 'analisis':return {title:'Análisis',sub:'Tu evolución financiera completa',month:false};case 'ajustes':return {title:'Ajustes',sub:'Apariencia, espacios y respaldo',month:false};default:return {title:'Resumen',sub:'Tu panorama financiero de '+monthName(state.cur,true).toLowerCase(),month:true};}}
+function navBadge(id){if(id==='ingresos'||id==='gastos'||id==='ahorros'||id==='inversiones'){var type=id==='ingresos'?'ingreso':id==='gastos'?'gasto':id==='ahorros'?'ahorro':'inversion';var c=txOfType(type,state.cur).length;return c?String(c):'';}if(id==='compartida')return S.shared.length?String(S.shared.length):'';if(id==='deudas'){var nd=(S.debts||[]).filter(function(d){return d.balance>0.005;}).length;return nd?String(nd):'';}return '';}
 function renderSidebar(){var nav=$('nav');if(!nav)return;nav.innerHTML=NAV_GROUPS.map(function(g){return '<div class="nav-group"><div class="nav-label">'+g.label+'</div>'+g.items.map(function(it){var b=navBadge(it[0]);return '<button class="nav-item '+(state.tab===it[0]?'active':'')+'" onclick="go(\''+it[0]+'\')">'+ic(it[2],17).replace('class="','class="nav-icon ')+'<span>'+it[1]+'</span>'+(b?'<span class="nav-badge">'+b+'</span>':'')+'</button>';}).join('')+'</div>';}).join('');var av=$('wsAvatar');if(av){av.textContent=initials(S.name);av.style.background=colorFor(S.name)+'22';av.style.color=colorFor(S.name);}var wn=$('wsName'),wm=$('wsMeta');if(wn)wn.textContent=S.name;if(wm)wm.textContent=fmt0(totalAccounts())+' en cuentas';var ch=$('wsChevron');if(ch)ch.innerHTML=ic('down',13);renderWsMenu();}
 function renderWsMenu(){var m=$('wsMenu');if(!m)return;m.innerHTML=R.profs.map(function(p){var col=colorFor(p.name);return '<button class="ws-item '+(p.id===S.id?'active':'')+'" onclick="switchProfile(\''+p.id+'\')" role="menuitem"><span class="avatar" style="background:'+col+'22;color:'+col+'">'+esc(initials(p.name))+'</span><span class="ws-item-name">'+esc(p.name)+'</span>'+(p.id===S.id?ic('check',13):'')+'</button>';}).join('')+'<div class="ws-sep"></div><button class="ws-item" onclick="closeWsMenu();openProfileModal()">'+ic('plus',14)+'<span class="ws-item-name">Nuevo espacio</span></button><button class="ws-item" onclick="closeWsMenu();go(\'ajustes\')">'+ic('settings',14)+'<span class="ws-item-name">Gestionar espacios</span></button>';}
 function renderBottomNav(){var el=$('bottomNav');if(!el)return;el.innerHTML=BOTTOM_NAV.map(function(it){return '<button class="bnav '+(state.tab===it[0]?'active':'')+'" onclick="go(\''+it[0]+'\')">'+ic(it[2],18)+'<span>'+it[1]+'</span></button>';}).join('');}
-function quickAddMeta(){switch(state.tab){case 'compartida':return {label:'Nuevo aporte',icon:'plus'};case 'cuentas':return {label:'Nueva cuenta',icon:'plus'};case 'categorias':return {label:'Nueva categoría',icon:'plus'};case 'ajustes':return null;case 'ingresos':return {label:'Nuevo ingreso',icon:'plus'};case 'gastos':return {label:'Nuevo gasto',icon:'plus'};case 'ahorros':return {label:'Nuevo ahorro',icon:'plus'};case 'inversiones':return {label:'Nueva inversión',icon:'plus'};default:return {label:'Nuevo movimiento',icon:'plus'};}}
-function render(){var meta=pageMeta();document.title=meta.title+' · Mis finanzas';$('pageTitle').textContent=meta.title;$('pageSub').textContent=meta.sub;$('monthSwitch').style.display=meta.month?'flex':'none';$('monthLabel').textContent=monthName(state.cur,true);var qa=$('quickAdd');var qm=quickAddMeta();if(qm){qa.style.display='';qa.innerHTML=ic(qm.icon,15)+'<span class="btn-label">'+qm.label+'</span>';}else qa.style.display='none';renderSidebar();renderBottomNav();updateThemeButton();var view={resumen:vResumen,ingresos:vIngresos,gastos:vGastos,ahorros:vAhorros,inversiones:vInversiones,compartida:vCompartida,cuentas:vCuentas,categorias:vCategorias,analisis:vAnalisis,ajustes:vAjustes}[state.tab]||vResumen;var app=$('app');app.innerHTML=view();app.classList.remove('view-enter');void app.offsetWidth;app.classList.add('view-enter');animateCounters();}
+function quickAddMeta(){switch(state.tab){case 'compartida':return {label:'Nuevo aporte',icon:'plus'};case 'cuentas':return {label:'Nueva cuenta',icon:'plus'};case 'deudas':return {label:'Nueva deuda',icon:'plus'};case 'categorias':return {label:'Nueva categoría',icon:'plus'};case 'ajustes':return null;case 'ingresos':return {label:'Nuevo ingreso',icon:'plus'};case 'gastos':return {label:'Nuevo gasto',icon:'plus'};case 'ahorros':return {label:'Nuevo ahorro',icon:'plus'};case 'inversiones':return {label:'Nueva inversión',icon:'plus'};default:return {label:'Nuevo movimiento',icon:'plus'};}}
+function render(){var meta=pageMeta();document.title=meta.title+' · Mis finanzas';$('pageTitle').textContent=meta.title;$('pageSub').textContent=meta.sub;$('monthSwitch').style.display=meta.month?'flex':'none';$('monthLabel').textContent=monthName(state.cur,true);var qa=$('quickAdd');var qm=quickAddMeta();if(qm){qa.style.display='';qa.innerHTML=ic(qm.icon,15)+'<span class="btn-label">'+qm.label+'</span>';}else qa.style.display='none';renderSidebar();renderBottomNav();updateThemeButton();var view={resumen:vResumen,ingresos:vIngresos,gastos:vGastos,ahorros:vAhorros,inversiones:vInversiones,compartida:vCompartida,cuentas:vCuentas,deudas:vDeudas,categorias:vCategorias,analisis:vAnalisis,ajustes:vAjustes}[state.tab]||vResumen;var app=$('app');app.innerHTML=view();app.classList.remove('view-enter');void app.offsetWidth;app.classList.add('view-enter');animateCounters();}
 function go(tab){state.tab=tab;closeSidebar();closeWsMenu();window.scrollTo({top:0,behavior:'smooth'});render();}
 function shiftMonth(n){state.cur=addMonth(state.cur,n);render();}
 function switchProfile(id){R.act=id;pick();resetTxFilters();state.sharedSel=S.shared.length?S.shared[0].id:null;state.sharedFilter='all';save();closeWsMenu();render();toast('Espacio: '+S.name);}
@@ -1947,6 +2071,28 @@ function deleteTransfer(id){
 }
 
 function vCuentas(){var total=totalAccounts(),accounts=S.cue.slice().sort(function(a,b){return b.amt-a.amt;});var largest=accounts[0];var positive=accounts.filter(function(a){return a.amt>0;});var accountColors={};accounts.forEach(function(a,i){accountColors[a.id]=PALETTE[i%PALETTE.length];});var bars=positive.map(function(a){var col=accountColors[a.id];return '<span style="width:'+(total>0?clamp(a.amt/total*100,0,100):0)+'%;background:'+col+'" title="'+esc(a.name)+': '+esc(fmt(a.amt))+'"></span>';}).join('');var legend=positive.slice(0,6).map(function(a){return '<span><i style="background:'+accountColors[a.id]+'"></i>'+esc(a.name)+'</span>';}).join('');var cards=accounts.map(function(a){return '<div class="account-card"><div class="account-top"><span class="account-icon">'+accountIcon(a.type,15)+'</span><div class="account-actions"><button class="icon-btn" onclick="openAccountModal(\''+a.id+'\')" aria-label="Editar cuenta" title="Editar">'+ic('edit',13)+'</button><button class="icon-btn danger" onclick="deleteAccount(\''+a.id+'\')" aria-label="Eliminar cuenta" title="Eliminar">'+ic('trash',13)+'</button></div></div><div class="account-name">'+esc(a.name)+'</div><div class="account-type">'+esc(accountTypeLabel(a.type))+'</div><div class="account-amount">'+esc(fmt(a.amt))+'</div></div>';}).join('');return '<div class="grid kpis section">'+kpiRaw('Total en cuentas',esc(fmt(total)),'<span>'+accounts.length+' cuenta'+(accounts.length===1?'':'s')+' cargada'+(accounts.length===1?'':'s')+'</span>','in','wallet')+kpiRaw('Mayor saldo',largest?esc(largest.name):'—',largest?'<span>'+esc(fmt(largest.amt))+'</span>':'<span>Sin cuentas todavía</span>','in','bank',largest?'sm':'')+kpiRaw('En frascos',esc(fmt(totalJars())),'<span>dinero separado para metas</span>','ah','target')+kpiRaw('Ahorro acumulado',esc(fmt(totalSavings())),'<span>histórico de este espacio</span>','ah','savings')+'</div><div class="card card-pad section"><div class="card-head"><div><h2 class="card-title">Tus cuentas y billeteras</h2><div class="card-desc">Los saldos se ajustan con los movimientos asociados y también podés editarlos a mano.</div></div><button class="btn primary sm" onclick="openAccountModal()">'+ic('plus',14)+' Nueva cuenta</button></div>'+(positive.length?'<div class="distribution-bar">'+bars+'</div><div class="distribution-legend">'+legend+'</div>':'')+'<div class="accounts-grid" style="margin-top:14px">'+(cards||'')+'<button class="account-add" onclick="openAccountModal()">'+ic('plus',15)+' Agregar cuenta</button></div></div>'+transfersCard()+'<div class="card card-pad section"><div class="card-head"><div><h2 class="card-title">Cómo se organiza tu dinero</h2><div class="card-desc">Una vista rápida de tus saldos y metas</div></div></div><div class="reconcile-row"><span class="n">Total en cuentas</span><b>'+esc(fmt(totalAccounts()))+'</b></div><div class="reconcile-row"><span class="n">En frascos de ahorro</span><b>'+esc(fmt(totalJars()))+'</b></div><div class="reconcile-row"><span class="n">Sin asignar a frascos</span><b class="'+(totalAccounts()-totalJars()<0?'neg':'pos')+'">'+esc(fmt(totalAccounts()-totalJars()))+'</b></div><div class="form-hint" style="margin-top:10px">Los frascos son una forma de separar mentalmente el ahorro; no descuentan automáticamente el saldo de tus cuentas.</div></div>';}
+function debtCardHTML(d,i){
+  var info=debtDueInfo(d);
+  var p=debtProgress(d);
+  var color=PALETTE[i%PALETTE.length];
+  var active=d.balance>0.005;
+  var rate=d.rate?'<span>TNA '+NUM.format(d.rate)+'%</span>':'';
+  var foot=active
+    ?'<div class="debt-card-foot"><button class="btn sm" onclick="openDebtPaymentModal(\''+d.id+'\')">'+ic('check',12)+' Registrar pago</button><button class="link-btn" onclick="openDebtDetail(\''+d.id+'\')">Historial '+ic('arrowRight',11)+'</button></div>'
+    :'<div class="debt-card-foot"><span class="debt-paid-badge">'+ic('check',12)+' Deuda saldada</span><button class="link-btn" onclick="openDebtDetail(\''+d.id+'\')">Historial '+ic('arrowRight',11)+'</button></div>';
+  return '<div class="debt-card"><div class="debt-top"><span class="debt-icon" style="background:'+color+'22;color:'+color+'">'+ic(debtTypeIcon(d.type),15)+'</span><div class="debt-actions"><button class="icon-btn" onclick="openDebtModal(\''+d.id+'\')" aria-label="Editar deuda" title="Editar">'+ic('edit',13)+'</button><button class="icon-btn danger" onclick="deleteDebt(\''+d.id+'\')" aria-label="Eliminar deuda" title="Eliminar">'+ic('trash',13)+'</button></div></div><div class="debt-name">'+esc(d.name)+'</div><div class="debt-type">'+esc(debtTypeLabel(d.type))+(d.creditor?' · '+esc(d.creditor):'')+'</div><div class="debt-amount'+(active?'':' paid')+'">'+esc(fmt(d.balance))+'</div><div class="debt-meta"><span>Original '+esc(fmt(d.original))+'</span>'+rate+'</div><div class="progress" style="margin-top:10px"><span style="width:'+p+'%;background:'+color+'"></span></div><div class="debt-progress-label"><span>'+pct(p)+' pagado</span><span>'+esc(fmt(debtPaid(d)))+'</span></div><div class="debt-foot"><span class="debt-due '+info.cls+'">'+ic('calendar',12)+esc(info.label)+'</span><span class="debt-payment">'+(d.payment?'Cuota '+esc(fmt(d.payment)):'Sin cuota')+'</span></div>'+foot+'</div>';
+}
+function vDeudas(){
+  var t=debtTotals();
+  var items=t.active.map(function(d,i){return {label:d.name,value:d.balance,color:PALETTE[i%PALETTE.length]};});
+  var totalProgress=t.original>0?clamp(t.paidAmt/t.original*100,0,100):0;
+  var list=debtFilteredSorted();
+  var cards=list.map(function(d,i){return debtCardHTML(d,i);}).join('');
+  var filterBtns=[['all','Todas'],['active','Activas'],['paid','Pagadas']].map(function(x){return '<button class="'+(state.debtFilter===x[0]?'active':'')+'" onclick="setDebtFilter(\''+x[0]+'\')">'+x[1]+'</button>';}).join('');
+  var sort='<select class="select" onchange="setDebtSort(this.value)" aria-label="Ordenar deudas"><option value="due"'+(state.debtSort==='due'?' selected':'')+'>Vencimiento</option><option value="balance"'+(state.debtSort==='balance'?' selected':'')+'>Saldo</option><option value="name"'+(state.debtSort==='name'?' selected':'')+'>Nombre</option></select>';
+  var listBlock=cards?'<div class="debt-grid">'+cards+'</div>':emptyState('debt',t.list.length?'No hay deudas en este filtro':'Todavía no cargaste deudas',t.list.length?'Probá con otro filtro para ver el resto.':'Agregá tus tarjetas, préstamos o cuotas para ver el total y los próximos vencimientos.','<button class="btn sm primary" onclick="openDebtModal()">'+ic('plus',14)+' Agregar deuda</button>');
+  return '<div class="grid kpis section">'+kpiRaw('Deuda total',esc(fmt(t.total)),'<span>'+t.active.length+' activa'+(t.active.length===1?'':'s')+' de '+t.list.length+' registrada'+(t.list.length===1?'':'s')+'</span>','ga','debt')+kpiRaw('Pago mensual',esc(fmt(t.monthly)),'<span>cuotas cargadas de deudas activas</span>','wa','calendar')+kpiRaw('Interés promedio',t.total?pct(t.rate):'—','<span>ponderado por saldo</span>','ga','chart',t.total?'':'sm')+kpiRaw('Próximo vencimiento',t.next?esc(dateLabel(t.next.due)):'—',t.next?'<span>'+esc(t.next.name)+' · '+esc(fmt(t.next.balance))+'</span>':'<span>Sin fechas cargadas</span>','ga','alert',t.next?'sm':'')+'</div>'+'<div class="grid dash-main section"><div class="card card-pad"><div class="card-head"><div><h2 class="card-title">Composición de la deuda</h2><div class="card-desc">Saldo pendiente por deuda activa</div></div></div>'+(items.length?donutChart(items,t.total,{centerLabel:'Deuda',label:'Deuda por deuda'}):emptyState('debt','Sin deudas activas','Cuando agregues una deuda vas a ver cómo se reparte el saldo pendiente.','<button class="btn sm primary" onclick="openDebtModal()">Agregar deuda</button>'))+'</div><div class="card card-pad"><div class="card-head"><div><h2 class="card-title">Resumen</h2><div class="card-desc">Tu avance general</div></div><span class="kpi-icon ga">'+ic('debt',16)+'</span></div><div class="summary-total">'+esc(fmt(t.total))+'</div><div class="summary-sub">saldo pendiente de '+t.active.length+' deuda'+(t.active.length===1?'':'s')+'</div><div class="debt-summary-progress"><div class="progress"><span style="width:'+totalProgress+'%"></span></div><div class="debt-progress-label"><span>'+pct(totalProgress)+' pagado</span><span>'+esc(fmt(t.paidAmt))+'</span></div></div><div class="summary-breakdown three"><div><span>Original</span><b>'+esc(fmt(t.original))+'</b></div><div><span>Pagado</span><b>'+esc(fmt(t.paidAmt))+'</b></div><div><span>Pendiente</span><b>'+esc(fmt(t.total))+'</b></div></div><div class="debt-summary-rows">'+(t.next?'<div class="debt-summary-row"><span>Próximo vencimiento</span><b>'+esc(dateLabel(t.next.due))+'</b></div>':'')+'<div class="debt-summary-row"><span>Pago mensual</span><b>'+esc(fmt(t.monthly))+'</b></div>'+(t.rate?'<div class="debt-summary-row"><span>Interés promedio</span><b>'+NUM.format(t.rate)+'%</b></div>':'')+'</div><button class="btn sm primary" style="width:100%;margin-top:12px" onclick="openDebtModal()">'+ic('plus',13)+' Nueva deuda</button></div></div>'+'<div class="section"><div class="section-head" style="flex-wrap:wrap"><div><div class="section-title">Todas tus deudas</div><div class="section-sub">Tocá una deuda para ver su historial de pagos.</div></div><div class="modal-actions-inline"><div class="segmented">'+filterBtns+'</div>'+sort+'</div></div>'+listBlock+'</div>';
+}
 function subcatRowHTML(s){var u=usageOf(s.id);var col=catColor(s);return '<div class="subcat-row"><span class="subcat-avatar" style="background:'+col+'1c;color:'+col+'">'+ic(catIconName(s),12)+'</span><div class="subcat-info"><div class="subcat-name">'+esc(s.name)+'</div><div class="subcat-meta">'+u.count+' movimiento'+(u.count===1?'':'s')+' · '+esc(fmt(u.total))+' histórico</div></div><div class="cat-actions"><button class="icon-btn" onclick="openSubcatModal(\''+s.parent+'\',\''+s.id+'\')" aria-label="Editar subcategoría" title="Editar">'+ic('edit',13)+'</button><button class="icon-btn danger" onclick="deleteSubcat(\''+s.id+'\')" aria-label="Eliminar subcategoría" title="Eliminar">'+ic('trash',13)+'</button></div></div>';}
 function catRowHTML(c){
   var u=usageOf(c.id);
@@ -2334,6 +2480,101 @@ function deleteAccount(id){
 function openJarModal(id){var j=id?S.fra.find(function(x){return x.id===id;}):null;var body='<label class="form-field"><span class="form-label">Nombre del frasco</span><input class="form-input" id="jarName" placeholder="Ej: Emergencias, Vacaciones, Alquiler…" value="'+esc(j?j.name:'')+'"></label><div class="form-row"><label class="form-field"><span class="form-label">Monto actual (USD)</span><input class="form-input" inputmode="decimal" id="jarAmt" placeholder="0,00" value="'+(j?j.amt:'')+'"></label><label class="form-field"><span class="form-label">Meta <span class="muted">(opcional)</span></span><input class="form-input" inputmode="decimal" id="jarTarget" placeholder="0,00" value="'+(j&&j.target?j.target:'')+'"></label></div><div class="form-hint">La meta es opcional. Si la cargás, vas a ver una barra de progreso.</div><div class="form-error" id="formError"></div>';openModal({title:j?'Editar frasco':'Nuevo frasco de ahorro',sub:'Separá tu ahorro por objetivos.',body:body,footer:[{label:'Cancelar'},{label:j?'Guardar cambios':'Crear frasco',cls:'primary',onClick:function(dlg){var name=dlg.querySelector('#jarName').value.trim();var amt=parseAmount(dlg.querySelector('#jarAmt').value);var target=parseAmount(dlg.querySelector('#jarTarget').value);if(!name){showFormError('Ponele un nombre al frasco.');return;}if(isNaN(amt)||amt<0){showFormError('Ingresá un monto válido.');return;}if(isNaN(target))target=0;if(target<0)target=0;if(j){j.name=name;j.amt=amt;j.target=target;}else{S.fra.push({id:uid(),name:name,amt:amt,target:target});}save();closeModal(dlg);render();toast(j?'Frasco actualizado':'Frasco creado','success');}}]});}
 function deleteJar(id){var j=S.fra.find(function(x){return x.id===id;});if(!j)return;confirmAction('Eliminar frasco','¿Querés eliminar <b>'+esc(j.name)+'</b> con <b>'+esc(fmt(j.amt))+'</b>?','Eliminar',function(){S.fra=S.fra.filter(function(x){return x.id!==id;});save();render();toast('Frasco eliminado');},true,'trash');}
 
+function openDebtModal(id){
+  var d=id?debtById(id):null;
+  var type=d?d.type:'tarjeta';
+  var body='<label class="form-field"><span class="form-label">Nombre</span><input class="form-input" id="debtName" maxlength="80" placeholder="Ej: Visa Santander, Préstamo personal…" value="'+esc(d?d.name:'')+'"></label>'
+    +'<div class="form-row"><label class="form-field"><span class="form-label">Tipo</span><select class="form-select" id="debtType">'+Object.keys(DEBT_TYPES).map(function(k){return '<option value="'+k+'"'+(k===type?' selected':'')+'>'+esc(DEBT_TYPES[k].label)+'</option>';}).join('')+'</select></label><label class="form-field"><span class="form-label">Acreedor <span class="muted">(opcional)</span></span><input class="form-input" id="debtCreditor" maxlength="80" placeholder="Ej: Banco, tarjeta…" value="'+esc(d?d.creditor:'')+'"></label></div>'
+    +'<div class="form-row"><label class="form-field"><span class="form-label">Saldo actual (USD)</span><input class="form-input" inputmode="decimal" id="debtBalance" placeholder="0,00" value="'+(d?d.balance:'')+'"></label><label class="form-field"><span class="form-label">Monto original <span class="muted">(opcional)</span></span><input class="form-input" inputmode="decimal" id="debtOriginal" placeholder="0,00" value="'+(d&&d.original?d.original:'')+'"></label></div>'
+    +'<div class="form-row"><label class="form-field"><span class="form-label">Tasa anual (%) <span class="muted">(opcional)</span></span><input class="form-input" inputmode="decimal" id="debtRate" placeholder="Ej: 45" value="'+(d&&d.rate?d.rate:'')+'"></label><label class="form-field"><span class="form-label">Cuota mensual (USD) <span class="muted">(opcional)</span></span><input class="form-input" inputmode="decimal" id="debtPayment" placeholder="0,00" value="'+(d&&d.payment?d.payment:'')+'"></label></div>'
+    +'<label class="form-field"><span class="form-label">Próximo vencimiento <span class="muted">(opcional)</span></span><input class="form-input" type="date" id="debtDue" value="'+(d?d.due:'')+'"></label>'
+    +'<label class="form-field"><span class="form-label">Nota <span class="muted">(opcional)</span></span><textarea class="form-input" id="debtNote" maxlength="300" placeholder="Ej: 6 cuotas de la compra…">'+esc(d?d.note:'')+'</textarea></label>'
+    +'<div class="form-hint">El saldo actual es lo que todavía debés. El monto original se usa para calcular el porcentaje pagado.</div><div class="form-error" id="formError"></div>';
+  openModal({title:d?'Editar deuda':'Nueva deuda',sub:'Cargá el saldo, la cuota y el próximo vencimiento.',body:body,footer:[{label:'Cancelar'},{label:d?'Guardar cambios':'Agregar deuda',cls:'primary',onClick:function(dlg){saveDebt(id,dlg);}}]});
+}
+function saveDebt(id,dlg){
+  var name=dlg.querySelector('#debtName').value.trim();
+  var type=dlg.querySelector('#debtType').value;
+  var creditor=dlg.querySelector('#debtCreditor').value.trim();
+  var balance=parseAmount(dlg.querySelector('#debtBalance').value);
+  var original=parseAmount(dlg.querySelector('#debtOriginal').value);
+  var rate=parseAmount(dlg.querySelector('#debtRate').value);
+  var payment=parseAmount(dlg.querySelector('#debtPayment').value);
+  var due=dlg.querySelector('#debtDue').value;
+  var note=dlg.querySelector('#debtNote').value.trim();
+  if(!name){showFormError('Ponele un nombre a la deuda.');return;}
+  if(isNaN(balance)||balance<0){showFormError('Ingresá un saldo válido.');return;}
+  if(isNaN(original))original=balance;
+  if(original<balance)original=balance;
+  if(isNaN(rate)||rate<0)rate=0;
+  if(isNaN(payment)||payment<0)payment=0;
+  if(!DEBT_TYPES[type])type='otro';
+  var old=id?debtById(id):null;
+  if(id&&!old)return;
+  var d=old||{id:uid(),payments:[]};
+  d.name=name;d.type=type;d.creditor=creditor;d.balance=Math.round(balance*100)/100;d.original=Math.round(original*100)/100;d.rate=rate;d.payment=payment;d.due=due||'';d.note=note;
+  if(!old)S.debts.push(d);
+  save();closeModal(dlg);render();toast(old?'Deuda actualizada':'Deuda agregada','success');
+}
+function openDebtPaymentModal(id){
+  var d=debtById(id);if(!d)return;
+  if(d.balance<=0.005){toast('Esta deuda ya está saldada','error');return;}
+  var amount=d.payment>0?Math.min(d.payment,d.balance):d.balance;
+  var body='<div class="debt-detail-head" style="padding-bottom:11px"><div><span class="debt-detail-label">Saldo pendiente</span><div class="hero-amount" style="font-size:28px">'+esc(fmt(d.balance))+'</div><div class="debt-detail-sub">'+esc(d.name)+'</div></div><span class="debt-detail-badge">'+ic('calendar',12)+esc(debtDueInfo(d).label)+'</span></div>'
+    +'<div class="form-row" style="margin-top:12px"><label class="form-field"><span class="form-label">Monto (USD)</span><input class="form-input" inputmode="decimal" id="debtPayAmt" placeholder="0,00" value="'+amount+'"></label><label class="form-field"><span class="form-label">Fecha</span><input class="form-input" type="date" id="debtPayDate" value="'+todayISO()+'"></label></div>'
+    +'<label class="form-field"><span class="form-label">Nota <span class="muted">(opcional)</span></span><input class="form-input" id="debtPayNote" placeholder="Ej: pago de noviembre" value=""></label>'
+    +'<label class="form-check"><input type="checkbox" id="debtPayAdvance" checked><span>Avanzar el próximo vencimiento un mes</span></label>'
+    +'<div class="form-hint">El pago se descuenta del saldo de la deuda. Si querés que también impacte en tus gastos, registralo como movimiento aparte.</div><div class="form-error" id="formError"></div>';
+  openModal({title:'Registrar pago',sub:'Descontá un pago del saldo pendiente.',body:body,footer:[{label:'Cancelar'},{label:'Registrar pago',cls:'primary',onClick:function(dlg){saveDebtPayment(id,dlg);}}]});
+}
+function saveDebtPayment(id,dlg){
+  var d=debtById(id);if(!d)return;
+  var amt=parseAmount(dlg.querySelector('#debtPayAmt').value);
+  var date=dlg.querySelector('#debtPayDate').value;
+  var note=dlg.querySelector('#debtPayNote').value.trim();
+  var advance=dlg.querySelector('#debtPayAdvance').checked;
+  if(!date){showFormError('Elegí una fecha.');return;}
+  if(!(amt>0)){showFormError('Ingresá un monto mayor a 0.');return;}
+  if(amt>d.balance+0.005){showFormError('El pago no puede superar el saldo pendiente ('+fmt(d.balance)+').');return;}
+  d.balance=Math.round((d.balance-amt)*100)/100;
+  if(d.balance<0.005)d.balance=0;
+  d.payments=d.payments||[];
+  var payment={id:uid(),date:date,amt:amt,note:note};
+  if(advance&&d.due){payment.prevDue=d.due;d.due=advanceDueDate(d.due);}
+  d.payments.push(payment);
+  save();closeModal(dlg);render();toast(d.balance===0?'Deuda saldada':'Pago registrado','success');
+}
+function openDebtDetail(id){
+  var d=debtById(id);if(!d)return;
+  var info=debtDueInfo(d);
+  var pays=(d.payments||[]).slice().sort(function(a,b){return b.date.localeCompare(a.date);});
+  var payList=pays.length?pays.map(function(p){return '<div class="debt-payment-row"><span class="debt-payment-icon">'+ic('check',12)+'</span><div class="debt-payment-info"><div class="debt-payment-amt">'+esc(fmt(p.amt))+'</div><div class="debt-payment-meta">'+esc(dateLabel(p.date,true))+(p.note?' · '+esc(p.note):'')+'</div></div><button class="icon-btn danger" onclick="deleteDebtPayment(\''+d.id+'\',\''+p.id+'\')" aria-label="Eliminar pago" title="Eliminar pago">'+ic('trash',12)+'</button></div>';}).join(''):'<div class="tx-empty">Todavía no registraste pagos para esta deuda.</div>';
+  var body='<div class="debt-detail-head"><div><span class="debt-detail-label">Saldo pendiente</span><div class="hero-amount" style="font-size:30px">'+esc(fmt(d.balance))+'</div><div class="debt-detail-sub">'+esc(debtTypeLabel(d.type))+(d.creditor?' · '+esc(d.creditor):'')+'</div></div><span class="debt-detail-badge '+info.cls+'">'+ic('calendar',12)+esc(info.label)+'</span></div>'
+    +'<div class="debt-detail-stats"><div><span>Original</span><b>'+esc(fmt(d.original))+'</b></div><div><span>Pagado</span><b>'+esc(fmt(debtPaid(d)))+'</b></div><div><span>Cuota</span><b>'+(d.payment?esc(fmt(d.payment)):'—')+'</b></div><div><span>Tasa anual</span><b>'+(d.rate?NUM.format(d.rate)+'%':'—')+'</b></div></div>'
+    +'<div class="debt-summary-progress"><div class="progress"><span style="width:'+debtProgress(d)+'%"></span></div><div class="debt-progress-label"><span>'+pct(debtProgress(d))+' pagado</span><span>'+esc(fmt(debtPaid(d)))+'</span></div></div>'
+    +(d.note?'<div class="debt-note">'+esc(d.note)+'</div>':'')
+    +'<div class="detail-label">Historial de pagos</div>'+payList;
+  var footer=[{label:'Cerrar'},{label:'Editar',onClick:function(){openDebtModal(id);}}];
+  if(d.balance>0.005)footer.push({label:'Registrar pago',cls:'primary',onClick:function(){openDebtPaymentModal(id);}});
+  openModal({title:d.name,sub:'Detalle y pagos de la deuda.',body:body,footer:footer});
+}
+function deleteDebt(id){
+  var d=debtById(id);if(!d)return;
+  var pays=(d.payments||[]).length;
+  var extra=pays?' Se van a borrar '+pays+' pago'+(pays===1?'':'s')+' registrado'+(pays===1?'':'s')+'.':'';
+  confirmAction('Eliminar deuda','¿Querés eliminar <b>'+esc(d.name)+'</b> con saldo de <b>'+esc(fmt(d.balance))+'</b>?'+extra+' Esta acción no se puede deshacer.','Eliminar',function(){S.debts=S.debts.filter(function(x){return x.id!==id;});save();render();toast('Deuda eliminada');},true,'trash');
+}
+function deleteDebtPayment(debtId,payId){
+  var d=debtById(debtId);if(!d)return;
+  var p=(d.payments||[]).find(function(x){return x.id===payId;});if(!p)return;
+  var last=d.payments[d.payments.length-1];
+  confirmAction('Eliminar pago','¿Querés eliminar el pago de <b>'+esc(fmt(p.amt))+'</b> del '+esc(dateLabel(p.date,true))+'? El saldo pendiente va a aumentar de nuevo.','Eliminar',function(){
+    d.balance=Math.round((d.balance+p.amt)*100)/100;
+    d.payments=(d.payments||[]).filter(function(x){return x.id!==payId;});
+    if(last&&last.id===payId&&p.prevDue)d.due=p.prevDue;
+    save();render();openDebtDetail(debtId);toast('Pago eliminado');
+  },true,'trash');
+}
 function toggleBudgetField(type){var f=$('budgetField');if(f)f.style.display=type==='gasto'?'':'none';}
 function openCatModal(id){
   var c=id?catById(id):null;
@@ -2568,9 +2809,9 @@ function commitImport(mode,name){
 function importData(file){handleImportFile(file);}
 function copyData(){var data=JSON.stringify(R,null,2);if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(data).then(function(){toast('JSON copiado al portapapeles','success');},function(){fallbackCopy(data);});}else fallbackCopy(data);}
 function fallbackCopy(data){var ta=document.createElement('textarea');ta.value=data;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('JSON copiado al portapapeles','success');}catch(e){toast('No se pudo copiar','error');}ta.remove();}
-function resetAll(){confirmAction('Borrar todos los datos','Se van a borrar <b>todos los espacios</b>, movimientos, cuentas, frascos y cuentas compartidas guardadas en este navegador. No se puede deshacer.','Borrar todo',function(){try{localStorage.removeItem(KEY);}catch(e){}location.reload();},true,'trash');}
+function resetAll(){confirmAction('Borrar todos los datos','Se van a borrar <b>todos los espacios</b>, movimientos, cuentas, frascos, deudas y cuentas compartidas guardadas en este navegador. No se puede deshacer.','Borrar todo',function(){try{localStorage.removeItem(KEY);}catch(e){}location.reload();},true,'trash');}
 
-function quickAdd(){switch(state.tab){case 'compartida':openMoveModal();break;case 'cuentas':openAccountModal();break;case 'categorias':openCatModal();break;case 'ajustes':break;case 'ingresos':openTxModal(null,'ingreso');break;case 'gastos':openTxModal(null,'gasto');break;case 'ahorros':openTxModal(null,'ahorro');break;case 'inversiones':openTxModal(null,'inversion');break;default:openTxModal();}}
+function quickAdd(){switch(state.tab){case 'compartida':openMoveModal();break;case 'cuentas':openAccountModal();break;case 'deudas':openDebtModal();break;case 'categorias':openCatModal();break;case 'ajustes':break;case 'ingresos':openTxModal(null,'ingreso');break;case 'gastos':openTxModal(null,'gasto');break;case 'ahorros':openTxModal(null,'ahorro');break;case 'inversiones':openTxModal(null,'inversion');break;default:openTxModal();}}
 /* ================= Sincronización entre dispositivos (Supabase) ================= */
 var SYNC_CFG_KEY='finanzas_sync_v1';
 var SYNC_SQL=`-- Mis finanzas · sincronización entre dispositivos
